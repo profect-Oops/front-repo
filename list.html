@@ -8,45 +8,58 @@
     <script defer src="js/demo/script.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
-        /* Login 제목 스타일 */
-        .login-title {
+        /* 'Top 10' 제목 스타일 */
+        .cards-title {
             color: #4e73df; /* 파란색으로 설정 */
             font-weight: 800; /* 글씨를 두껍게 설정 */
             font-size: 2rem; /* 글씨 크기 설정 */
             margin-bottom: 20px; /* 제목 아래 여백 추가 */
         }
-
-        /* 소셜 로그인 버튼 스타일 */
-        .social-login-buttons {
+        
+        /* 테이블을 감싸는 컨테이너 스타일 */
+        .cards-container {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .social-button {
-            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            width: 200px;
+            width: 100%; /* 컨테이너의 너비를 전체로 설정 */
+            min-height: 100vh; /* 화면 높이를 꽉 채우도록 설정 */
+            padding: 20px;
         }
-        .google-button {
-            background-color: #4285F4;
+
+        /* 테이블 스타일 */
+        #coin-table {
+            margin-top: 20px;
+            width: 80%; /* 테이블 너비를 원하는 크기로 설정 (예: 80%) */
+            border-collapse: collapse;
+            margin: 0 auto; /* 자동 좌우 마진으로 테이블 중앙 정렬 */
+        }
+
+        #coin-table th, #coin-table td {
+            padding: 12px; /* 패딩을 설정해 주세요 */
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap; /* 텍스트가 한 줄로 표시되도록 설정 */
+            overflow: hidden; /* 넘치는 텍스트는 숨기기 */
+            text-overflow: ellipsis; /* 넘치는 텍스트에 생략 기호(...) 추가 */
+        }
+
+        #coin-table td:nth-child(2) {
+            min-width: 150px; /* 이름 칸의 최소 너비 설정 */
+        }
+
+        #coin-table th {
+            background-color: #4e73df;
             color: white;
         }
-        .kakao-button {
-            background-color: #F7E600;
-            color: black;
+
+        #coin-table img {
+            max-width: 50px; /* 이미지의 최대 너비를 50px로 설정 */
+            height: auto; /* 높이는 자동으로 비율에 맞게 조정 */
         }
-        .google-button:hover, .kakao-button:hover {
-            opacity: 0.8;
-        }
-        .social-button i {
-            margin-right: 10px;
-        }
+
+
+
     </style>
 </head>
 <body>
@@ -114,23 +127,25 @@
                 </nav>
                 <!-- End of Topbar -->
 
-                <!-- 로그인 -->
-                <div class="login-container">
-                    <h1 class="login-title" style="text-align: center; font-size: 2rem; margin-top: 50px;">Login</h1>
-                    
-                    <!-- 소셜 로그인 버튼 -->
-                    <div class="social-login-buttons">
-                        <!-- 구글 로그인 버튼 -->
-                        <button class="social-button google-button">
-                            <i class="fab fa-google"></i> Google 로그인
-                        </button>
-                        <!-- 카카오 로그인 버튼 -->
-                        <button class="social-button kakao-button">
-                            <i class="fab fa-kakao"></i> Kakao 로그인
-                        </button>
-                    </div>
+                <!-- 코인 테이블 섹션 -->
+                <div class="cards-container">
+                    <h2 class="cards-title">Top 10</h2>
+                    <table id="coin-table">
+                    <thead>
+                        <tr>
+                        <th>로고</th>
+                        <th>이름</th>
+                        <th>티커</th>
+                        <th>현재가</th>
+                        <th>전일 대비</th>
+                        <th>거래액</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coin-table-body">
+                        <!-- 코인 데이터가 여기에 추가됩니다 -->
+                    </tbody>
+                    </table>
                 </div>
-
             </div>
         </div>
     </div>

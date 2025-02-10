@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top 10 Coins</title>
-    <link rel="stylesheet" href="style.css">
     <script defer src="js/demo/script.js"></script>
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         /* 'Top 10' 제목 스타일 */
         .cards-title {
@@ -15,7 +15,7 @@
             font-size: 2rem; /* 글씨 크기 설정 */
             margin-bottom: 20px; /* 제목 아래 여백 추가 */
         }
-        
+
         /* 테이블을 감싸는 컨테이너 스타일 */
         .cards-container {
             display: flex;
@@ -63,90 +63,34 @@
     </style>
 </head>
 <body>
-    <!-- 네비게이션 바 -->
-    <!DOCTYPE html>
-<html lang="en">
+    <header style="background-color: #4e73df;" class="p-4 flex justify-between items-center">
+        <a href="list.html" class="text-white text-2xl font-bold">coinfo</a>
+        <div class="flex items-center space-x-4">
+            <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
+            <span class="text-white">|</span>
+            <button class="text-white text-2xl"><i class="ph ph-user"></i></button>
+        </div>
+    </header>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    
-    <title>Coinfo</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="css/custom.css" rel="stylesheet">
-</head>
-
-<body id="page-top">
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <!-- Main Content -->
-            <div id="content">
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top shadow" style="background-color: #4e73df !important;">
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html" style="height: 4.375rem; text-decoration: none; font-size: 1rem; font-weight: 800; padding: 1.5rem 1rem; text-align: center; text-transform: uppercase; letter-spacing: 0.05rem; font-family: 'Nunito', sans-serif; color: #ffffff;">
-                        <div class="sidebar-brand-text mx-3" style="font-size: 1rem; font-weight: 800; color: #ffffff;">Coinfo</div>
-                    </a>
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link" href="list.html" id="alertsDropdown">
-                                <i class="fas fa-bell fa-fw" style="color: #ffffff !important;"></i>
-                                <span class="badge badge-danger badge-counter">1+</span>
-                            </a>
-                        </li>
-                        <div class="topbar-divider d-none d-sm-block"></div>
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="color: #ffffff !important;">[1팀]Oops!</span>
-                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i> Profile
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="logout.html">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i> Logout
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- 코인 테이블 섹션 -->
-                <div class="cards-container">
-                    <h2 class="cards-title">Top 10</h2>
-                    <table id="coin-table">
-                    <thead>
-                        <tr>
-                        <th>로고</th>
-                        <th>이름</th>
-                        <th>티커</th>
-                        <th>현재가</th>
-                        <th>전일 대비</th>
-                        <th>거래액</th>
-                        </tr>
-                    </thead>
-                    <tbody id="coin-table-body">
-                        <!-- 코인 데이터가 여기에 추가됩니다 -->
-                    </tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="container mx-auto p-6 grid grid-cols-3 gap-6"></div>
+        <!-- 코인 테이블 섹션 -->
+        <div class="cards-container">
+            <h2 class="cards-title">Top 10</h2>
+            <table id="coin-table">
+            <thead>
+                <tr>
+                <th>로고</th>
+                <th>이름</th>
+                <th>티커</th>
+                <th>현재가</th>
+                <th>전일 대비</th>
+                <th>거래액</th>
+                </tr>
+            </thead>
+            <tbody id="coin-table-body">
+                <!-- 코인 데이터가 여기에 추가됩니다 -->
+            </tbody>
+            </table>
         </div>
     </div>
 </body>

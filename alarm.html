@@ -1,479 +1,463 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coinfo</title>
 
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    <!-- FontAwesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
 
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EDEEF1;
+        }
 
-    <!-- 추가할 커스텀 CSS -->
-    <link href="css/custom.css" rel="stylesheet">
+        /* 네비게이션 바 */
+        .navbar {
+            background-color: #4e73df;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            padding: 15px 30px;
+            color: white;
+        }
 
-</head>
+        .navbar .brand {
+            font-size: 1.0rem;
+            font-weight: 800;  /* 굵기 최대값 */
+            text-transform: uppercase;
+            font-family: 'Nunito', sans-serif !important;
+            text-align: left;
+            white-space: nowrap; /* 줄바꿈 방지 */
+            margin-left: 10px;
+        }
+        
 
-<body id="page-top">
+        .navbar .icons {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 10px;
+        }
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
+        .navbar .icons i {
+            font-size: 1.0rem;
+            cursor: pointer;
+            color: white;
+            position: relative;
+        }
+
+        /* 알람 배지 스타일 */
+        .badge {
+            position: absolute;
+            top: -3px;
+            right: -5px;
+            background: red;
+            color: white;
+            font-size: 0.5rem;
+            padding: 2px 4px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* 세로 구분선 */
+        .divider {
+            height: 25px;
+            width: 2px;
+            background-color: white;
+            margin: 0 15px;
+        }
+
+        /* 유저 텍스트 스타일 */
+        .user-text {
+            font-size: 0.8rem;
+            color: #ffffff; /* 흰색 유지 */
+        }
+
+        /* 프로필 이미지 */
+        .profile {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+            object-fit: cover;
+        }
+
+        /* 카드 컨테이너 */
+        .card-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        /* 카드 스타일 */
+        .card {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 60px;
+            border-left: 5px solid var(--card-border-color);; /* 왼쪽 바 */
+        }
+
+        
+        /* 카드별 개별 색상 설정 */
+        .card.total {
+            --card-border-color: #4e73df;
+            color: #4e73df;
+        }
+        .card.on {
+            --card-border-color: #1cc88a;
+            color: #1cc88a;
+        }
+        .card.off {
+            --card-border-color: #36b9cc;
+            color: #36b9cc;
+        }
+
+        /* 카드 내부 제목 스타일 */
+        .card h3 {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: inherit; /* 카드 색상과 동일하게 */
+        }
+
+        /* 숫자 스타일 */
+        .card p {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #5A5C69;
+            margin-top: -10px; /* 기존보다 위 여백 줄이기 */
+        }
+
+        /* 아이콘 스타일 (오른쪽 중앙 정렬) */
+        .card i {
+            position: absolute;
+            right: 20px; /* 카드의 오른쪽에서 간격 조정 */
+            top: 50%; /* 부모 요소 기준 세로 중앙 */
+            transform: translateY(-50%); /* 정확한 중앙 정렬 */
+            font-size: 35px;
+            color: #DDDFEB;
+        }
+
 
         
 
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
+        /* 알림 설정 박스 */
+        .settings-container {
+            background-color: #4e73df;
+            padding: 25px;
+            border-radius: 6px;
+            color: white;
+            margin-right: 30px;
+            margin-left: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
-            <!-- Main Content -->
-            <div id="content">
+        .settings-container .label {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
 
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light topbar mb-4 static-top shadow" 
-                style="background-color: #4e73df !important;">
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
+        /* 알림 설정 제목 (왼쪽 정렬) */
+        .settings-container .input-group {
+            display: flex;
+            text-align: left; /* 왼쪽 정렬 */
+        }
 
-                    <!-- Sidebar - Brand -->
-                <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html" 
-                style="height: 4.375rem; text-decoration: none; font-size: 1rem; font-weight: 800; 
-                    padding: 1.5rem 1rem; text-align: center; text-transform: uppercase; 
-                    letter-spacing: 0.05rem; font-family: 'Nunito', sans-serif; color: #ffffff;">
-                <div class="sidebar-brand-text mx-3" 
-                    style="font-size: 1rem; font-weight: 800; color: #ffffff;">
-                    Coinfo
-                </div>
-                </a>
-                   
+        /* 입력 필드와 버튼 그룹 */
+        .settings-container .input-group-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* 오른쪽 정렬 */
+            gap: 15px; /* 요소 간 간격 */
+            flex-wrap: wrap; /* 반응형을 위해 줄바꿈 허용 */
+        }
 
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
+        .settings-container .input-group {
+            display: flex;
+            align-items: center;
+        }
 
+        .settings-container .input-group label {
+            margin-right: 10px;
+        }
 
-                        <!-- Nav Item - Alerts -->
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <a class="nav-link" href="alarm.html" id="alertsDropdown">
-                                <i class="fas fa-bell fa-fw" style="color: #ffffff !important;"></i>
-                                <!-- Counter - Alerts -->
-                                <span class="badge badge-danger badge-counter">1+</span>
-                            </a>
-                        </li>
+        .settings-container input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
 
-                        
-                        <div class="topbar-divider d-none d-sm-block"></div>
+        .settings-container button {
+            background: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
 
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small" style="color: #ffffff !important;">[1팀]Oops!</span>
-                                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
-                            </a>
+        /* 테이블 스타일 */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
 
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="logout.html">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
 
-                    </ul>
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
 
-                </nav>
-                <!-- End of Topbar -->
+        th {
+            background-color: #4e73df;
+            color: white;
+        }
 
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
+        /* 토글 스위치 스타일 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
 
-                    <!-- Content Row -->
-                    <div class="row">
+        /* 체크박스 숨기기 */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-                        <!-- Earnings (Monthly) Card Example -->
-                        <div class="col-xl-4 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                총 알람 개수(Total)</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">10개</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-list-alt fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        /* 슬라이더 기본 스타일 */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
 
-                        <!-- 알람 ON 카드 -->
-                        <div class="col-xl-4 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                알람 ON
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">4개</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-bell fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        /* 체크 상태에서의 배경색 */
+        input:checked + .slider {
+            background-color: #4e73df;
+        }
 
-                        <!-- 알람 OFF 카드 -->
-                        <div class="col-xl-4 col-md-6 mb-4">
-                            <div class="card border-left-info shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                                알람 OFF
-                                            </div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">6개</div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-bell-slash fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        /* 슬라이더 내부 원 */
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
 
+        /* 체크 상태에서 원의 위치 이동 */
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
 
-                    </div>
-                    <!-- Content Row -->
-                    <div class="row">
+        /* 둥근 스타일 */
+        .slider.round {
+            border-radius: 34px;
+        }
 
-                        <!-- Content Column -->
-                        <div class="col-lg-12 mb-12">
+        .slider.round:before {
+            border-radius: 50%;
+        }
 
-                            <!-- Project Card Example -->
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-4 d-flex flex-wrap align-items-center justify-content-between"
-                                     style="background-color: #4e73df !important; color: white !important;">
-                                    
-                                    <!-- 왼쪽: 알림 설정 (고정) -->
-                                    <div class="col-md-2 col-12 text-left">
-                                        <h6 class="m-0 font-weight-bold" style="color: white !important;">알림 설정</h6>
-                                    </div>
-                            
-                                    <!-- 오른쪽: 검색창 그룹 + 설정 버튼 -->
-                                    <div class="col-md-10 col-12 d-flex justify-content-end align-items-center flex-wrap">
-                                        <div class="d-flex align-items-center">
-                                            <label class="mb-0 mr-2" style="white-space: nowrap; min-width: 50px; color: white !important;">종목:</label>
-                                            <input type="text" class="form-control mr-3" placeholder="검색" 
-                                                   style="height: 38px; max-width: 200px;">
-                                        </div>
-                            
-                                        <div class="d-flex align-items-center">
-                                            <label class="mb-0 mr-2" style="white-space: nowrap; min-width: 50px; color: white !important;">가격:</label>
-                                            <input type="text" class="form-control mr-3" placeholder="검색" 
-                                                   style="height: 38px; max-width: 200px;">
-                                        </div>
-                            
-                                        <button class="btn btn-light mr-3" style="height: 38px; width: auto; min-width: 100px;">설정</button>
-                                    </div>
-                            
-                                </div>
-                            </div>
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .settings-container {
+                flex-direction: column;
+                text-align: center;
+            }
 
-                        </div>
-                    </div>
+            .settings-container .input-group {
+                flex-direction: column;
+                margin-bottom: 10px;
+            }
 
-                    <!-- Content Row -->
+            .settings-container input {
+                width: 100%;
+            }
+        }
 
-                    <div class="row">
+        /* 반응형 스타일 */
+        @media (max-width: 480px) {
+            .navbar .brand {
+                text-align: left !important; /* 강제 왼쪽 정렬 */
+            }
+        }
 
-                            <!-- 코인 알람 목록 -->
-                            <div class="col-xl-12 col-lg-12">
-                                <div class="card shadow mb-4">
-                                    <!-- 카드 헤더 -->
-                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                        <h6 class="m-0 font-weight-bold text-primary">코인 알람 목록</h6>
-                                        <div class="dropdown no-arrow">
-                                            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                                                aria-labelledby="dropdownMenuLink">
-                                                <div class="dropdown-header">설정 옵션</div>
-                                                <a class="dropdown-item" href="#">알람 추가</a>
-                                                <a class="dropdown-item" href="#">알람 관리</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">전체 알람 끄기</a>
-                                            </div>
-                                        </div>
-                                    </div>
+        /* 반응형: 화면이 작아질 경우 카드 줄바꿈 */
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column; /* 세로 정렬 */
+            }
+        }
 
-                                    <!-- 카드 바디 -->
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>코인 이름</th>
-                                                        <th>알림 설정 가격</th>
-                                                        <th>알림 설정</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Bitcoin (BTC)</td>
-                                                        <td>$40,000</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox" checked>
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Ethereum (ETH)</td>
-                                                        <td>$3,200</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox">
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Solana (SOL)</td>
-                                                        <td>$120</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox" checked>
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Ripple (XRP)</td>
-                                                        <td>$0.75</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox">
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Dogecoin (DOGE)</td>
-                                                        <td>$0.09</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox">
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Cardano (ADA)</td>
-                                                        <td>$0.40</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox" checked>
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Polkadot (DOT)</td>
-                                                        <td>$6.50</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox">
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Binance Coin (BNB)</td>
-                                                        <td>$250</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox" checked>
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Shiba Inu (SHIB)</td>
-                                                        <td>$0.00002</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox">
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Litecoin (LTC)</td>
-                                                        <td>$75</td>
-                                                        <td>
-                                                            <label class="switch">
-                                                                <input type="checkbox">
-                                                                <span class="slider round"></span>
-                                                            </label>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    </style>
+</head>
+<body>
 
-
-                        <!-- 토글 스위치 스타일 -->
-                        <style>
-                            .switch {
-                                position: relative;
-                                display: inline-block;
-                                width: 34px;
-                                height: 20px;
-                            }
-
-                            .switch input {
-                                opacity: 0;
-                                width: 0;
-                                height: 0;
-                            }
-
-                            .slider {
-                                position: absolute;
-                                cursor: pointer;
-                                top: 0;
-                                left: 0;
-                                right: 0;
-                                bottom: 0;
-                                background-color: #ccc;
-                                transition: .4s;
-                                border-radius: 34px;
-                            }
-
-                            .slider:before {
-                                position: absolute;
-                                content: "";
-                                height: 14px;
-                                width: 14px;
-                                left: 3px;
-                                bottom: 3px;
-                                background-color: white;
-                                transition: .4s;
-                                border-radius: 50%;
-                            }
-
-                            input:checked + .slider {
-                                background-color: #4e73df;
-                            }
-
-                            input:checked + .slider:before {
-                                transform: translateX(14px);
-                            }
-                        </style>
-
-                        
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="brand">Coinfo</div>
+        <div class="icons">
+            <!-- 알람 아이콘 (배지 포함) -->
+            <div style="position: relative;">
+                <i class="fas fa-bell"></i>
+                <span class="badge">1+</span>
             </div>
-            <!-- End of Main Content -->
 
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright &copy; Your Website 2021</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
+            <!-- 세로 구분선 -->
+            <div class="divider"></div>
 
+            <!-- 유저 프로필 (텍스트 포함) -->
+            <span class="user-text">[1팀]Oops!</span>
+            <i class="fas fa-user-circle" style="color: white; font-size: 35px;"></i>
         </div>
-        <!-- End of Content Wrapper -->
+    </nav>
 
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
-                </div>
-            </div>
+    <!-- 카드 섹션 -->
+    <div class="card-container">
+        <div class="card total">
+            <h3>총 알람 개수(TOTAL)</h3>
+            <p>10개</p>
+            <i class="fas fa-list-alt"></i>
+        </div>
+        <div class="card on">
+            <h3>알람 ON</h3>
+            <p>4개</p>
+            <i class="fas fa-bell"></i>
+        </div>
+        <div class="card off">
+            <h3>알람 OFF</h3>
+            <p>6개</p>
+            <i class="fas fa-bell-slash"></i>
         </div>
     </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- 알림 설정 -->
+    <div class="settings-container">
+        <!-- 왼쪽 정렬: 알림 설정 텍스트 -->
+        <div class="label">알림 설정</div>
 
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+        <!-- 오른쪽 정렬: 입력 필드와 버튼 -->
+        <div class="input-group-wrapper">
+            <div class="input-group">
+                <label>종목:</label>
+                <input type="text" id="stock-search" placeholder="검색">
+            </div>
+            <div class="input-group">
+                <label>가격:</label>
+                <input type="text" id="price-search" placeholder="검색">
+            </div>
+            <button onclick="setAlarm()">설정</button>
+        </div>
+    </div>
 
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+    <!-- 코인 알람 목록 -->
+    <div class="table-container">
+        <h2>코인 알람 목록</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>코인 이름</th>
+                    <th>알림 설정 가격</th>
+                    <th>알림 설정</th>
+                </tr>
+            </thead>
+            <tbody id="coin-table">
+                <tr>
+                    <td>Bitcoin (BTC)</td>
+                    <td>$40,000</td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ethereum (ETH)</td>
+                    <td>$3,200</td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Solana (SOL)</td>
+                    <td>$120</td>
+                    <td>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
+    <script>
+        // 알람 설정 버튼 클릭 시
+        function setAlarm() {
+            let stock = document.getElementById("stock-search").value;
+            let price = document.getElementById("price-search").value;
+            
+            if (stock && price) {
+                alert(`알람이 설정되었습니다.\n종목: ${stock}\n가격: ${price}`);
+            } else {
+                alert("모든 항목을 입력해주세요.");
+            }
+        }
+    </script>
 
 </body>
-
 </html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coinfo</title>
+
+    <!-- FontAwesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EDEEF1;
+        }
+
+        /* 네비게이션 바 */
+        .navbar {
+            background-color: #4e73df;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            padding: 15px 30px;
+            color: white;
+        }
+
+        .navbar .brand {
+            font-size: 1.0rem;
+            font-weight: 800;  /* 굵기 최대값 */
+            text-transform: uppercase;
+            font-family: 'Nunito', sans-serif !important;
+            text-align: left;
+            white-space: nowrap; /* 줄바꿈 방지 */
+            margin-left: 10px;
+        }
+
+
+        .navbar .icons {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 10px;
+        }
+
+        .navbar .icons i {
+            font-size: 1.0rem;
+            cursor: pointer;
+            color: white;
+            position: relative;
+        }
+
+        /* 알람 배지 스타일 */
+        .badge {
+            position: absolute;
+            top: -3px;
+            right: -5px;
+            background: red;
+            color: white;
+            font-size: 0.5rem;
+            padding: 2px 4px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* 세로 구분선 */
+        .divider {
+            height: 25px;
+            width: 2px;
+            background-color: white;
+            margin: 0 15px;
+        }
+
+        /* 유저 텍스트 스타일 */
+        .user-text {
+            font-size: 0.8rem;
+            color: #ffffff; /* 흰색 유지 */
+        }
+
+        /* 프로필 이미지 */
+        .profile {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: white;
+            object-fit: cover;
+        }
+
+        /* 카드 컨테이너 */
+        .card-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        /* 카드 스타일 */
+        .card {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            padding: 25px;
+            border-radius: 6px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 60px;
+            border-left: 5px solid var(--card-border-color);; /* 왼쪽 바 */
+        }
+
+
+        /* 카드별 개별 색상 설정 */
+        .card.total {
+            --card-border-color: #4e73df;
+            color: #4e73df;
+        }
+        .card.on {
+            --card-border-color: #1cc88a;
+            color: #1cc88a;
+        }
+        .card.off {
+            --card-border-color: #36b9cc;
+            color: #36b9cc;
+        }
+
+        /* 카드 내부 제목 스타일 */
+        .card h3 {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: inherit; /* 카드 색상과 동일하게 */
+        }
+
+        /* 숫자 스타일 */
+        .card p {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #5A5C69;
+            margin-top: -10px; /* 기존보다 위 여백 줄이기 */
+        }
+
+        /* 아이콘 스타일 (오른쪽 중앙 정렬) */
+        .card i {
+            position: absolute;
+            right: 20px; /* 카드의 오른쪽에서 간격 조정 */
+            top: 50%; /* 부모 요소 기준 세로 중앙 */
+            transform: translateY(-50%); /* 정확한 중앙 정렬 */
+            font-size: 35px;
+            color: #DDDFEB;
+        }
+
+        /* 수정 및 삭제 버튼 스타일 */
+        .edit-button, .delete-button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .edit-button {
+            background-color: #4e73df;
+            color: white;
+            margin-right: 5px;
+        }
+
+        .delete-button {
+            background-color: #e74a3b;
+            color: white;
+        }
+
+        /* 알림 설정 박스 */
+        .settings-container {
+            background-color: #4e73df;
+            padding: 25px;
+            border-radius: 6px;
+            color: white;
+            margin-right: 30px;
+            margin-left: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .settings-container .label {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 알림 설정 제목 (왼쪽 정렬) */
+        .settings-container .input-group {
+            display: flex;
+            text-align: left; /* 왼쪽 정렬 */
+        }
+
+        /* 입력 필드와 버튼 그룹 */
+        .settings-container .input-group-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* 오른쪽 정렬 */
+            gap: 15px; /* 요소 간 간격 */
+            flex-wrap: wrap; /* 반응형을 위해 줄바꿈 허용 */
+        }
+
+        .settings-container .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .settings-container .input-group label {
+            margin-right: 10px;
+        }
+
+        .settings-container input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        .settings-container button {
+            background: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        /* 테이블 스타일 */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        /* 토글 스위치 스타일 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        /* 체크박스 숨기기 */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        /* 슬라이더 기본 스타일 */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        /* 체크 상태에서의 배경색 */
+        input:checked + .slider {
+            background-color: #4e73df;
+        }
+
+        /* 슬라이더 내부 원 */
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        /* 체크 상태에서 원의 위치 이동 */
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* 둥근 스타일 */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .settings-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .settings-container .input-group {
+                flex-direction: column;
+                margin-bottom: 10px;
+            }
+
+            .settings-container input {
+                width: 100%;
+            }
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 480px) {
+            .navbar .brand {
+                text-align: left !important; /* 강제 왼쪽 정렬 */
+            }
+        }
+
+        /* 반응형: 화면이 작아질 경우 카드 줄바꿈 */
+        @media (max-width: 768px) {
+            .card-container {
+                flex-direction: column; /* 세로 정렬 */
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- 네비게이션 바 -->
+<nav class="navbar">
+    <div class="brand">Coinfo</div>
+    <div class="icons">
+        <!-- 알람 아이콘 (배지 포함) -->
+        <div style="position: relative;">
+            <i class="fas fa-bell"></i>
+            <span class="badge">1+</span>
+        </div>
+
+        <!-- 세로 구분선 -->
+        <div class="divider"></div>
+
+        <!-- 유저 프로필 (텍스트 포함) -->
+        <span class="user-text">[1팀]Oops!</span>
+        <i class="fas fa-user-circle" style="color: white; font-size: 35px;"></i>
+    </div>
+</nav>
+
+<!-- 카드 섹션 -->
+<div class="card-container">
+    <div class="card total">
+        <h3>총 알람 개수(TOTAL)</h3>
+        <p>10개</p>
+        <i class="fas fa-list-alt"></i>
+    </div>
+    <div class="card on">
+        <h3>알람 ON</h3>
+        <p>4개</p>
+        <i class="fas fa-bell"></i>
+    </div>
+    <div class="card off">
+        <h3>알람 OFF</h3>
+        <p>6개</p>
+        <i class="fas fa-bell-slash"></i>
+    </div>
+</div>
+
+<!-- 알림 설정 -->
+<div class="settings-container">
+    <!-- 왼쪽 정렬: 알림 설정 텍스트 -->
+    <div class="label">알림 설정</div>
+
+    <!-- 오른쪽 정렬: 입력 필드와 버튼 -->
+    <div class="input-group-wrapper">
+        <div class="input-group">
+            <label>종목:</label>
+            <input type="text" id="stock-search" placeholder="검색">
+        </div>
+        <div class="input-group">
+            <label>가격:</label>
+            <input type="text" id="price-search" placeholder="검색">
+        </div>
+        <button id="saveAlertButton">설정</button>
+    </div>
+</div>
+
+<!-- 코인 알람 목록 -->
+<div class="table-container">
+    <h2>코인 알람 목록</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>코인 이름</th>
+            <th>알림 설정 가격</th>
+            <th>알림 설정</th>
+            <th>수정</th>
+            <th>삭제</th>
+        </tr>
+        </thead>
+        <tbody id="coin-table">
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    // 페이지가 로드될 때 알림 데이터를 조회
+    window.addEventListener("DOMContentLoaded", async function() {
+        try {
+            const response = await fetch("/api/alert/read", { // 알림 리스트를 가져오는 API 호출
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include" // 세션 유지를 위한 옵션
+            });
+
+            const data = await response.json();
+
+            if (data.result.code === "0000") {
+                populateTable(data.data); // 데이터를 테이블에 동적으로 삽입
+            } else {
+                alert("알림을 불러오는 데 실패했습니다.");
+            }
+        } catch (error) {
+            console.error("알림 데이터를 불러오는 중 오류 발생:", error);
+            alert("알림 데이터를 불러오는 중 오류가 발생했습니다.");
+        }
+    });
+
+    // 테이블에 알림 데이터 삽입
+    function populateTable(alerts) {
+        const tableBody = document.getElementById("coin-table");
+        // 테이블 초기화
+        tableBody.innerHTML = "";
+
+        console.log("API 응답 데이터:", alerts);
+
+        alerts.forEach(alert => {
+            const row = document.createElement("tr");
+
+            // 코인 이름
+            const coinNameCell = document.createElement("td");
+            coinNameCell.textContent = alert.coin.name;
+
+            // 알림 가격
+            const alertPriceCell = document.createElement("td");
+            alertPriceCell.textContent = `₩${alert.alertPrice.toLocaleString()}`; // 숫자 포맷 적용
+
+            // 알림 설정 (스위치)
+            const alertActiveCell = document.createElement("td");
+            const switchLabel = document.createElement("label");
+            switchLabel.classList.add("switch");
+
+            const switchInput = document.createElement("input");
+            switchInput.type = "checkbox";
+            switchInput.checked = alert.alertActive; // 알림 활성화 여부
+            switchInput.setAttribute("data-alert-id", alert.alertId); // alertId 저장
+
+            const switchSpan = document.createElement("span");
+            switchSpan.classList.add("slider", "round");
+
+            switchLabel.appendChild(switchInput);
+            switchLabel.appendChild(switchSpan);
+            alertActiveCell.appendChild(switchLabel);
+
+            // 수정 버튼
+            const editButton = document.createElement("button");
+            editButton.textContent = "수정";
+            editButton.classList.add("edit-button");
+            editButton.setAttribute("data-alert-id", alert.alertId);
+
+            // 삭제 버튼
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "삭제";
+            deleteButton.classList.add("delete-button");
+            deleteButton.setAttribute("data-alert-id", alert.alertId);
+
+            // 수정 버튼 셀
+            const editCell = document.createElement("td");
+            editCell.appendChild(editButton);
+
+            // 삭제 버튼 셀
+            const deleteCell = document.createElement("td");
+            deleteCell.appendChild(deleteButton);
+
+            // 테이블에 행 추가
+            row.appendChild(coinNameCell);
+            row.appendChild(alertPriceCell);
+            row.appendChild(alertActiveCell);
+            row.appendChild(editCell);
+            row.appendChild(deleteCell);
+            tableBody.appendChild(row);
+        });
+
+        // 이벤트 리스너 추가 (이벤트 위임 방식 적용)
+        tableBody.addEventListener("change", async function(event) {
+            const switchInput = event.target;
+            if (switchInput.type === "checkbox") {
+                const alertId = switchInput.getAttribute("data-alert-id");
+                const alertActive = switchInput.checked;
+
+                try {
+                    const response = await fetch(`/api/alert/update/${alertId}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ alertActive: alertActive })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.result.code === "0000") {
+                        alert("✅ 알림 상태가 변경되었습니다!");
+                    } else {
+                        alert("⚠️ 알림 상태 변경에 실패했습니다.");
+                    }
+                } catch (error) {
+                    console.error("❌ 알림 상태 변경 오류:", error);
+                    alert("⚠️ 네트워크 오류로 인해 알림 상태를 변경할 수 없습니다.");
+                }
+            }
+        });
+
+        // 수정 버튼 클릭 이벤트 핸들러
+        tableBody.addEventListener("click", function(event) {
+            if (event.target.classList.contains("edit-button")) {
+                const alertId = event.target.getAttribute("data-alert-id");
+                const row = event.target.closest("tr");
+                const coinName = row.cells[0].textContent;
+                const alertPrice = row.cells[1].textContent.replace("₩", "").replace(",", "");
+
+                // 입력 필드에 알림 정보 채우기
+                document.getElementById("stock-search").value = coinName;
+                document.getElementById("price-search").value = alertPrice;
+
+                // 종목 입력란 비활성화
+                document.getElementById("stock-search").disabled = true;
+
+                // 저장 버튼 텍스트 변경
+                document.getElementById("saveAlertButton").textContent = "수정";
+
+                // 수정 중인 알림의 ID를 저장
+                document.getElementById("saveAlertButton").setAttribute("data-alert-id", alertId);
+            }
+        });
+    }
+
+    //알림 생성 또는 수정
+    document.getElementById("saveAlertButton").addEventListener("click", async function() {
+
+        const alertId = this.getAttribute("data-alert-id");
+
+        if (alertId) {
+            // 알림 수정 로직
+            const newAlertPrice = parseFloat(document.getElementById("price-search").value);
+
+            try {
+                const response = await fetch(`/api/alert/update/price/${alertId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ alertPrice: newAlertPrice }),
+                    credentials: "include"
+                });
+
+                const result = await response.json();
+
+                if (result.result.code === "0000") {
+                    alert("알림 가격이 성공적으로 수정되었습니다!");
+                    // 수정된 알림 정보로 테이블 업데이트
+                    updateAlertInTable(alertId, newAlertPrice);
+                } else {
+                    alert("알림 가격 수정에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("알림 가격 수정 오류:", error);
+                alert("알림 가격 수정 중 오류가 발생했습니다.");
+            }
+
+            // 입력 필드 초기화
+            document.getElementById("stock-search").value = "";
+            document.getElementById("price-search").value = "";
+            document.getElementById("stock-search").disabled = false;
+            document.getElementById("saveAlertButton").textContent = "설정";
+            document.getElementById("saveAlertButton").removeAttribute("data-alert-id");
+        } else {
+
+
+            const coinName = document.getElementById("stock-search").value; // 사용자가 입력한 종목 값
+
+            if (!coinName) {
+                alert("코인명을 입력해주세요.");
+                return;
+            }
+
+            try {
+                // 알림 정보 생성
+                const alertRequest = {
+                    coinName: coinName,
+                    alertPrice: parseFloat(document.getElementById("price-search").value), // 알림 가격 입력
+                    alertActive: true // 알림 활성화 여부
+                };
+
+                // 알림 저장 요청
+                const saveResponse = await fetch("/api/alert/save", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(alertRequest),
+                    credentials: "include" // 세션 유지를 위한 옵션
+                });
+
+                const saveResult = await saveResponse.json();
+
+                if (saveResult.result.code === "0000") {//알림 생성
+                    alert("알림이 성공적으로 저장되었습니다!");
+                    // 새로운 알림 데이터 생성
+                    const newAlert = {
+                        coinName: coinName,
+                        alertPrice: alertRequest.alertPrice,
+                        alertActive: true,
+                        alertId: saveResult.data.alertId // 서버에서 생성된 alertId 사용
+                    };
+
+                    addNewAlertToTable(newAlert); // 새로운 알림을 테이블에 추가
+                } else {
+                    alert("알림 저장에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("코인 명을 확인해주세요.");
+            }
+        }
+    });
+
+    // 새로운 알림을 테이블에 추가
+    function addNewAlertToTable(newAlert) {
+        const tableBody = document.getElementById("coin-table");
+
+        const row = document.createElement("tr");
+
+        // 코인 이름
+        const coinNameCell = document.createElement("td");
+        coinNameCell.textContent = newAlert.coinName;
+
+        // 알림 가격
+        const alertPriceCell = document.createElement("td");
+        alertPriceCell.textContent = `₩${newAlert.alertPrice.toLocaleString()}`; // 숫자 포맷 적용
+
+        // 알림 설정 (스위치)
+        const alertActiveCell = document.createElement("td");
+        const switchLabel = document.createElement("label");
+        switchLabel.classList.add("switch");
+
+        const switchInput = document.createElement("input");
+        switchInput.type = "checkbox";
+        switchInput.checked = newAlert.alertActive; // 알림 활성화 여부
+        switchInput.setAttribute("data-alert-id", newAlert.alertId); // alertId 저장
+        switchInput.setAttribute("data-alert-active", newAlert.alertActive); // alertId 저장
+
+        const switchSpan = document.createElement("span");
+        switchSpan.classList.add("slider", "round");
+
+        switchLabel.appendChild(switchInput);
+        switchLabel.appendChild(switchSpan);
+        alertActiveCell.appendChild(switchLabel);
+
+        // 수정 버튼
+        const editButton = document.createElement("button");
+        editButton.textContent = "수정";
+        editButton.classList.add("edit-button");
+        editButton.setAttribute("data-alert-id", newAlert.alertId);
+
+        // 삭제 버튼
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent = "삭제";
+        deleteButton.classList.add("delete-button");
+        deleteButton.setAttribute("data-alert-id", newAlert.alertId);
+
+        // 수정 버튼 셀
+        const editCell = document.createElement("td");
+        editCell.appendChild(editButton);
+
+        // 삭제 버튼 셀
+        const deleteCell = document.createElement("td");
+        deleteCell.appendChild(deleteButton);
+
+        // 테이블에 행 추가
+        row.appendChild(coinNameCell);
+        row.appendChild(alertPriceCell);
+        row.appendChild(alertActiveCell);
+        row.appendChild(editCell);
+        row.appendChild(deleteCell);
+
+        // 테이블의 맨 위에 행 추가
+        if (tableBody.firstChild) {
+            tableBody.insertBefore(row, tableBody.firstChild);
+        } else {
+            tableBody.appendChild(row);
+        }
+
+    }
+
+
+    // 수정된 알림 정보로 테이블 업데이트
+    function updateAlertInTable(alertId, newAlertPrice) {
+        const tableRows = document.querySelectorAll("#coin-table tr");
+
+        tableRows.forEach(row => {
+            const rowAlertId = row.querySelector(".edit-button").getAttribute("data-alert-id");
+            if (rowAlertId === alertId) {
+                row.cells[1].textContent = `₩${newAlertPrice.toLocaleString()}`;
+            }
+        });
+    }
+
+    // 삭제 버튼 클릭 이벤트 리스너 추가
+    document.getElementById("coin-table").addEventListener("click", async function(event) {
+        if (event.target.classList.contains("delete-button")) {
+            const alertId = event.target.getAttribute("data-alert-id");
+
+            if (!confirm("정말 삭제하시겠습니까?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/alert/delete/${alertId}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include"
+                });
+
+                const result = await response.json();
+
+                if (result.result.code === "0000") {
+                    alert("✅ 알림이 삭제되었습니다.");
+                    event.target.closest("tr").remove(); // 테이블에서 해당 행 삭제
+                } else {
+                    alert("⚠️ 알림 삭제에 실패했습니다.");
+                }
+            } catch (error) {
+                console.error("❌ 알림 삭제 오류:", error);
+                alert("⚠️ 네트워크 오류로 인해 알림을 삭제할 수 없습니다.");
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

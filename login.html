@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top 10 Coins</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -50,31 +49,32 @@
     </style>
 </head>
 <body>
-    <header style="background-color: #4e73df;" class="p-4 flex justify-between items-center">
-        <a href="list.html" class="text-white text-2xl font-bold">coinfo</a>
-        <div class="flex items-center space-x-4">
-            <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
-            <span class="text-white">|</span>
-            <button class="text-white text-2xl"><i class="ph ph-user"></i></button>
-        </div>
-    </header>
-
-    <!-- 로그인 -->
-    <div class="login-container">
-        <h1 class="login-title" style="text-align: center; font-size: 2rem; margin-top: 50px;">Login</h1>
-        
-        <!-- 소셜 로그인 버튼 -->
-        <div class="social-login-buttons">
-            <!-- 구글 로그인 버튼 -->
-            <button class="social-button google-button">
-                <i class="fab fa-google"></i> Google 로그인
-            </button>
-            <!-- 카카오 로그인 버튼 -->
-            <button class="social-button kakao-button">
-                <i class="fab fa-kakao"></i> Kakao 로그인
-            </button>
-        </div>
+<header style="background-color: #4e73df;" class="p-4 flex justify-between items-center">
+    <a href="/coin/list.html" class="text-white text-2xl font-bold">coinfo</a>
+    <div class="flex items-center space-x-4">
+        <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
+        <span class="text-white">|</span>
+        <button class="text-white text-2xl"><i class="ph ph-user"></i></button>
     </div>
+</header>
+
+<!-- 로그인 -->
+<div class="login-container">
+    <h1 class="login-title" style="text-align: center; font-size: 2rem; margin-top: 50px;">Login</h1>
+
+    <!-- 소셜 로그인 버튼 -->
+    <div class="social-login-buttons">
+        <!-- 구글 로그인 버튼 -->
+        <a id="google-login-btn" class="social-button google-button" href="https://accounts.google.com/o/oauth2/auth?client_id=982183786748-c72u3quid3ma6ahcj5fjhqaq9h11esl9.apps.googleusercontent.com
+&redirect_uri=http://localhost:8080/login/oauth2/code/google&response_type=code&scope=profile+email">
+            <i class="fab fa-google"></i> Google 로그인
+        </a>
+        <!-- 카카오 로그인 버튼 -->
+        <button class="social-button kakao-button">
+            <i class="fab fa-kakao"></i> Kakao 로그인
+        </button>
+    </div>
+</div>
 
 </body>
 </html>

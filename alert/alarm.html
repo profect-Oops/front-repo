@@ -381,18 +381,18 @@
 <!-- 카드 섹션 -->
 <div class="card-container">
     <div class="card total">
-        <h3>총 알람 개수(TOTAL)</h3>
-        <p>10개</p>
+        <h3>총 알람 개수 (TOTAL)</h3>
+        <p id="total-alerts">- 개</p> <!-- 동적 데이터 업데이트 -->
         <i class="fas fa-list-alt"></i>
     </div>
     <div class="card on">
         <h3>알람 ON</h3>
-        <p>4개</p>
+        <p id="active-alerts">- 개</p> <!-- 동적 데이터 업데이트 -->
         <i class="fas fa-bell"></i>
     </div>
     <div class="card off">
         <h3>알람 OFF</h3>
-        <p>6개</p>
+        <p id="inactive-alerts">- 개</p> <!-- 동적 데이터 업데이트 -->
         <i class="fas fa-bell-slash"></i>
     </div>
 </div>
@@ -439,26 +439,61 @@
     // 페이지가 로드될 때 알림 데이터를 조회
     window.addEventListener("DOMContentLoaded", async function() {
         try {
-            const response = await fetch("/api/alert/read", { // 알림 리스트를 가져오는 API 호출
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include" // 세션 유지를 위한 옵션
-            });
+            // 알림 리스트 & 알림 개수 조회를 병렬로 실행하여 성능 최적화
+            const [alertResponse, countResponse] = await Promise.all([
+                fetch("/api/alert/read", { // 알림 리스트 가져오기
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include" // 세션 유지
+                }),
+                fetch("/api/alert/count", { // 총 알림 개수 가져오기
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include"
+                })
+            ]);
 
-            const data = await response.json();
+            const alertData = await alertResponse.json();
+            const countData = await countResponse.json();
 
-            if (data.result.code === "0000") {
-                populateTable(data.data); // 데이터를 테이블에 동적으로 삽입
+            // 알림 리스트 데이터 삽입
+            if (alertData.result.code === "0000") {
+                populateTable(alertData.data);
             } else {
                 alert("알림을 불러오는 데 실패했습니다.");
             }
+
+            // 알림 개수 데이터 삽입
+            if (countData.total !== undefined) {
+                document.getElementById("total-alerts").textContent = `${countData.total}개`;
+                document.getElementById("active-alerts").textContent = `${countData.on}개`;
+                document.getElementById("inactive-alerts").textContent = `${countData.off}개`;
+            } else {
+                console.warn("알림 개수를 가져오는 데 실패했습니다.");
+            }
+
         } catch (error) {
             console.error("알림 데이터를 불러오는 중 오류 발생:", error);
             alert("알림 데이터를 불러오는 중 오류가 발생했습니다.");
         }
     });
+
+    // 알람 개수 업데이트 함수
+    function updateAlertCounts() {
+    fetch("/api/alert/count", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+    })
+        .then(response => response.json())
+        .then(countData => {
+            document.getElementById("total-alerts").textContent = `${countData.total}개`;
+            document.getElementById("active-alerts").textContent = `${countData.on}개`;
+            document.getElementById("inactive-alerts").textContent = `${countData.off}개`;
+        })
+        .catch(error => console.error("알람 개수 업데이트 오류:", error));
+    }
+
 
     // 테이블에 알림 데이터 삽입
     function populateTable(alerts) {
@@ -543,6 +578,7 @@
 
                     if (result.result.code === "0000") {
                         alert("✅ 알림 상태가 변경되었습니다!");
+                        updateAlertCounts();
                     } else {
                         alert("⚠️ 알림 상태 변경에 실패했습니다.");
                     }
@@ -617,8 +653,7 @@
             document.getElementById("saveAlertButton").textContent = "설정";
             document.getElementById("saveAlertButton").removeAttribute("data-alert-id");
         } else {
-
-
+            //알림 새로 저장
             const coinName = document.getElementById("stock-search").value; // 사용자가 입력한 종목 값
 
             if (!coinName) {
@@ -655,7 +690,7 @@
                         alertActive: true,
                         alertId: saveResult.data.alertId // 서버에서 생성된 alertId 사용
                     };
-
+                    updateAlertCounts();
                     addNewAlertToTable(newAlert); // 새로운 알림을 테이블에 추가
                 } else {
                     alert("알림 저장에 실패했습니다.");
@@ -664,13 +699,18 @@
                 console.error("Error:", error);
                 alert("코인 명을 확인해주세요.");
             }
+            // 입력 필드 초기화
+            document.getElementById("stock-search").value = "";
+            document.getElementById("price-search").value = "";
+            document.getElementById("stock-search").disabled = false;
+            document.getElementById("saveAlertButton").textContent = "설정";
+            document.getElementById("saveAlertButton").removeAttribute("data-alert-id");
         }
     });
 
     // 새로운 알림을 테이블에 추가
     function addNewAlertToTable(newAlert) {
         const tableBody = document.getElementById("coin-table");
-
         const row = document.createElement("tr");
 
         // 코인 이름
@@ -743,10 +783,12 @@
         tableRows.forEach(row => {
             const rowAlertId = row.querySelector(".edit-button").getAttribute("data-alert-id");
             if (rowAlertId === alertId) {
+                //가격 업데이트
                 row.cells[1].textContent = `₩${newAlertPrice.toLocaleString()}`;
             }
         });
     }
+
 
     // 삭제 버튼 클릭 이벤트 리스너 추가
     document.getElementById("coin-table").addEventListener("click", async function(event) {
@@ -771,6 +813,7 @@
                 if (result.result.code === "0000") {
                     alert("✅ 알림이 삭제되었습니다.");
                     event.target.closest("tr").remove(); // 테이블에서 해당 행 삭제
+                    updateAlertCounts();
                 } else {
                     alert("⚠️ 알림 삭제에 실패했습니다.");
                 }

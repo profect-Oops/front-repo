@@ -1,18 +1,45 @@
-let candleData = [];
+// script 태그에서 data-ticker 값 가져오기
+const scriptTag = document.querySelector('script[src*="detail_front.js"]');
+const market = scriptTag && scriptTag.dataset.ticker ? `KRW-${scriptTag.dataset.ticker}` : "KRW-BTC";
+
+const socket = new SockJS("/ws");
+socket.binaryType = "arraybuffer";  // ✅ 바이너리 데이터 전송으로 변경
+const stompClient = Stomp.over(socket);
+
+// 차트 관련 변수
 let chart;
 let candleSeries;
-let socket;
-let isLoading = false;
+let candleData = [];
 let tempCandle = null;
 let lastCandleTimestamp = 0;
-const priceElement = document.getElementById("current-price");
 
-// script 태그에서 data-ticker 값 가져오기
-const scriptTag = document.querySelector('script[src*="upbit_websocket.js"]');
-const market = scriptTag && scriptTag.dataset.ticker ? `KRW-${scriptTag.dataset.ticker}` : "KRW-BTC"; // 기본값: KRW-BTC
-console.log(`market: ${market}`);
+stompClient.connect({}, function (frame) {
+    console.log("✅ WebSocket 연결됨:", frame);
 
-// Lightweight 차트 초기화
+    // ✅ 특정 마켓 가격 데이터만 구독
+    stompClient.subscribe(`/topic/priceDetail/${market}`, function (message) {
+        const startTime = performance.now(); // ✅ 시작 시간 기록
+        console.log("📥 가격 데이터 수신:", message.body);
+        const priceData = JSON.parse(message.body);
+        updateCurrentPrice(priceData.price);
+        const endTime = performance.now(); // ✅ 끝 시간 기록
+        console.log(`⏱️ 데이터 처리 시간: ${(endTime - startTime).toFixed(2)}ms`);
+    });
+
+    // ✅ 특정 마켓 캔들 데이터만 구독
+    stompClient.subscribe(`/topic/candle/${market}`, function (message) {
+        const candleData = JSON.parse(message.body);
+        processCandleData(candleData);
+    });
+
+
+
+}, function (error) {
+    console.error("❌ WebSocket 연결 실패:", error);
+    setTimeout(() => reconnectWebSocket(), 3000);
+});
+
+// ✅ 차트 초기화
 function initializeLightweightChart() {
     const chartContainer = document.getElementById("tradingview-chart");
     if (!chartContainer) {
@@ -37,19 +64,9 @@ function initializeLightweightChart() {
         },
     });
     candleSeries = chart.addCandlestickSeries();
-
-    chart.applyOptions({
-        localization: {
-            timeFormatter: (time) => formatKSTTooltip(time),
-        },
-    });
-    chart.timeScale().subscribeVisibleTimeRangeChange((timeRange) => {
-        if (timeRange.from < candleData[0]?.time + 60 && !isLoading) {
-            loadMoreHistoricalCandles();
-        }
-    });
 }
-// REST API로 과거 1분 캔들 데이터 가져오기
+
+// ✅ 과거 1분 캔들 데이터 가져오기
 async function fetchHistoricalCandles(count = 60, to = null) {
     let url = `https://api.upbit.com/v1/candles/minutes/1?market=${market}&count=${count}`;
     if (to) {
@@ -77,24 +94,14 @@ async function fetchHistoricalCandles(count = 60, to = null) {
         return [];
     }
 }
-// 과거 데이터 불러오기
-async function loadMoreHistoricalCandles() {
-    if (isLoading || candleData.length === 0) return;
-    isLoading = true;
-    const oldestTime = candleData[0].time * 1000;
-    const toDate = new Date(oldestTime).toISOString().split(".")[0];
-    const historicalCandles = await fetchHistoricalCandles(30, toDate);
-    if (historicalCandles.length > 0) {
-        candleData = [...historicalCandles, ...candleData];
-        candleSeries.setData(candleData);
-    }
-    isLoading = false;
-}
-// 1분봉 변환 로직
+
+// ✅ 캔들 데이터 반영
 function processCandleData(candle) {
     const timestamp = Math.floor(candle.timestamp / 1000);
     const minuteTimestamp = timestamp - (timestamp % 60);
+
     if (!tempCandle || minuteTimestamp > lastCandleTimestamp) {
+
         if (tempCandle) {
             candleSeries.update(tempCandle);
             candleData.push(tempCandle);
@@ -112,56 +119,38 @@ function processCandleData(candle) {
         tempCandle.low = Math.min(tempCandle.low, candle.low_price);
         tempCandle.close = candle.trade_price;
     }
+
+
     candleSeries.update(tempCandle);
 }
-// WebSocket 연결
-function connectWebSocket() {
-    if (socket) {
-        socket.close();
-    }
-    socket = new WebSocket('wss://api.upbit.com/websocket/v1');
-    socket.onopen = function () {
-        console.log("✅ WebSocket 연결됨");
-        const msg = JSON.stringify([
-            { "ticket": "test" },
-            { "type": "ticker", "codes": [market] },
-            { "type": "candle.1s", "codes": [market], "is_only_realtime": true },
-            { "format": "DEFAULT" }
-        ]);
-        socket.send(msg);
-    };
-    socket.onmessage = function (event) {
-        event.data.text().then(text => {
-            const data = JSON.parse(text);
-            if (data.type === "ticker" && data.trade_price) {
-                console.log("현재 가격 수신:", data.trade_price);
-                updateCurrentPrice(data.trade_price);
-            }
-            if (data.type === "candle.1s") {
-                processCandleData(data);
-            }
-        });
-    };
-    socket.onclose = function () {
-        console.log("WebSocket 연결 종료, 재연결 시도...");
-        setTimeout(connectWebSocket, 2000);
-    };
-    socket.onerror = function (error) {
-        console.error("WebSocket 오류 발생:", error);
-        socket.close();
-    };
-}
-// 현재 가격 업데이트
+
+// ✅ 현재 가격 업데이트
+let lastPrice = null;
+
 function updateCurrentPrice(price) {
-    if (priceElement) {
-        priceElement.textContent = `${price.toLocaleString("ko-KR")} 원`;
+    if (typeof price !== "number" || isNaN(price)) {
+        console.error("⛔ 유효하지 않은 가격 데이터:", price);
+        return;
+    }
+
+    if (price !== lastPrice) {
+        const priceElement = document.getElementById("current-price");
+        if (priceElement) {
+            priceElement.textContent = `${price.toLocaleString("ko-KR")} 원`;
+        }
+        lastPrice = price;
     }
 }
-// KST 시간 변환
+
+
+
+// ✅ KST 시간 변환
 function formatKSTTime(time) {
     const date = new Date(time * 1000);
     return date.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
 }
+
+// ✅ KST 툴팁 변환
 function formatKSTTooltip(time) {
     const date = new Date(time * 1000);
     return date.toLocaleString("ko-KR", {
@@ -169,10 +158,22 @@ function formatKSTTooltip(time) {
         hour: "2-digit", minute: "2-digit", second: "2-digit",
     });
 }
-// 실행
+
+// ✅ 재연결 로직
+function reconnectWebSocket() {
+    setTimeout(() => {
+        const newSocket = new SockJS("/ws");
+        stompClient.connect({}, function () {
+            console.log("✅ WebSocket 재연결됨");
+        }, function (error) {
+            console.error("❌ WebSocket 재연결 실패:", error);
+        });
+    }, 5000);
+}
+
+// ✅ 실행 (차트 초기화 + 과거 데이터 불러오기)
 window.onload = async function () {
     initializeLightweightChart();
     candleData = await fetchHistoricalCandles(60);
     candleSeries.setData(candleData);
-    connectWebSocket();
 };

@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coin Info Dashboard</title>
+
+    <!-- websocket 사용 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -14,7 +19,7 @@
 </head>
 <body class="bg-gray-100">
 <header class="bg-blue-600 p-4 flex justify-between items-center">
-    <a href="/coin/list.html" class="text-white text-2xl font-bold">coinfo</a>
+    <a href="/index.html" class="text-white text-2xl font-bold">coinfo</a>
     <div class="flex items-center space-x-4">
         <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
         <span class="text-white">|</span>
@@ -74,7 +79,8 @@
 
         // Upbit WebSocket 스크립트에 코인 티커 전달
         const script = document.createElement("script");
-        script.src = `../js/upbit_websocket.js`;
+        //script.src = `../js/upbit_websocket.js`;
+        script.src = `../js/upbit_front.js`;
         script.dataset.ticker = coinTicker;
         document.body.appendChild(script);
 

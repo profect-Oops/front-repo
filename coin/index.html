@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top 10 Coins</title>
-    <script defer src="/js/script.js"></script>
+    <!-- WebSocket 관련 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <!-- <script src="/js/script.js" type="text/javascript" defer></script> -->
+    <script src="/js/index_front.js" type="text/javascript" defer></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
@@ -61,7 +67,7 @@
 </head>
 <body>
 <header style="background-color: #4e73df;" class="p-4 flex justify-between items-center">
-    <a href="/coin/list.html" class="text-white text-2xl font-bold">coinfo</a>
+    <a href="/index.html" class="text-white text-2xl font-bold">coinfo</a>
     <div class="flex items-center space-x-4">
         <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
         <span class="text-white">|</span>
@@ -91,17 +97,6 @@
     </table>
 </div>
 
-<script>
-    // 세션에서 이메일 정보 가져와서 표시
-    fetch('/api/user/email')
-        .then(response => response.text())
-        .then(email => {
-            if (email.trim()) {
-                document.getElementById('email').textContent = email;
-                document.getElementById('email').classList.remove('hidden'); // 이메일 표시
-                document.getElementById('login-icon').classList.add('hidden'); // 로그인 아이콘 숨김
-            }
-        });
-</script>
+
 </body>
 </html>

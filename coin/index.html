@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 10 Coins</title>
+    <script defer src="/js/script.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        /* 'Top 10' 제목 스타일 */
+        .cards-title {
+            color: #4e73df;
+            font-weight: 800;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        /* 테이블을 감싸는 컨테이너 스타일 */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 테이블 스타일 */
+        #coin-table {
+            margin-top: 20px;
+            width: 80%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        #coin-table th, #coin-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #coin-table td:nth-child(2) {
+            min-width: 150px;
+        }
+
+        #coin-table th {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        #coin-table img {
+            max-width: 50px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<header style="background-color: #4e73df;" class="p-4 flex justify-between items-center">
+    <a href="/coin/list.html" class="text-white text-2xl font-bold">coinfo</a>
+    <div class="flex items-center space-x-4">
+        <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
+        <span class="text-white">|</span>
+        <button id="login-icon" class="text-white text-2xl"><i class="ph ph-user"></i></button>
+        <span id="email" class="text-white hidden"></span>
+    </div>
+</header>
+
+<div class="container mx-auto p-6 grid grid-cols-3 gap-6"></div>
+
+<!-- 코인 테이블 섹션 -->
+<div class="cards-container">
+    <h2 class="cards-title">Top 10</h2>
+    <table id="coin-table">
+        <thead>
+        <tr>
+            <th>로고</th>
+            <th>이름</th>
+            <th>티커</th>
+            <th>현재가</th>
+            <th>전일 대비</th>
+            <th>거래액</th>
+        </tr>
+        </thead>
+        <tbody id="coin-table-body">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 세션에서 이메일 정보 가져와서 표시
+    fetch('/api/user/email')
+        .then(response => response.text())
+        .then(email => {
+            if (email.trim()) {
+                document.getElementById('email').textContent = email;
+                document.getElementById('email').classList.remove('hidden'); // 이메일 표시
+                document.getElementById('login-icon').classList.add('hidden'); // 로그인 아이콘 숨김
+            }
+        });
+</script>
+</body>
+</html>

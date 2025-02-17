@@ -80,12 +80,12 @@
         // Upbit WebSocket 스크립트에 코인 티커 전달
         const script = document.createElement("script");
         //script.src = `../js/upbit_websocket.js`;
-        script.src = `../js/upbit_front.js`;
+        script.src = `../js/detail_front.js`;
         script.dataset.ticker = coinTicker;
         document.body.appendChild(script);
-
+        logo = `${coinTicker}`.replace("KRW-","");
         if (coinName && coinTicker) {
-            document.getElementById("coin-logo").src = `https://static.upbit.com/logos/${coinTicker}.png`;
+            document.getElementById("coin-logo").src = `https://static.upbit.com/logos/${logo}.png`;
             document.getElementById("coin-logo").alt = coinName;
             document.getElementById("coin-name").textContent = coinName;
             document.getElementById("coin-ticker").textContent = `KRW-${coinTicker}`;

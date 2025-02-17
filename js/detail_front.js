@@ -1,6 +1,6 @@
 // script 태그에서 data-ticker 값 가져오기
 const scriptTag = document.querySelector('script[src*="detail_front.js"]');
-const market = scriptTag && scriptTag.dataset.ticker ? `KRW-${scriptTag.dataset.ticker}` : "KRW-BTC";
+const market = scriptTag && scriptTag.dataset.ticker ? `${scriptTag.dataset.ticker}` : "KRW-BTC";
 
 const socket = new SockJS("/ws");
 socket.binaryType = "arraybuffer";  // ✅ 바이너리 데이터 전송으로 변경

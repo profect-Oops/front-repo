@@ -15,17 +15,117 @@
     <!-- TradingView 차트 로드 -->
     <!-- Lightweight Charts 스크립트 추가 -->
     <script src="https://unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
-    <!-- 캔들 차트 WebSocket 연결 -->
+
+    <!-- FontAwesome 아이콘 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!--Google Fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'Nunito', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EDEEF1;
+        }
+
+        /* 네비게이션 바 */
+        .navbar {
+            background-color: #4e73df;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 40px;
+            padding: 15px 30px;
+            color: white;
+        }
+
+        .navbar .brand {
+            font-size: 1.0rem;
+            font-weight: 800;  /* 굵기 최대값 */
+            text-transform: uppercase;
+            font-family: 'Nunito', sans-serif !important;
+            text-align: left;
+            white-space: nowrap; /* 줄바꿈 방지 */
+            margin-left: 10px;
+        }
+
+
+        .navbar .icons {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 10px;
+        }
+
+        .navbar .icons i {
+            font-size: 1.0rem;
+            cursor: pointer;
+            color: white;
+            position: relative;
+        }
+
+        /* 알람 배지 스타일 */
+        .badge {
+            position: absolute;
+            top: -3px;
+            right: -5px;
+            background: red;
+            color: white;
+            font-size: 0.5rem;
+            padding: 2px 4px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* 세로 구분선 */
+        .divider {
+            height: 25px;
+            width: 2px;
+            background-color: white;
+            margin: 0 15px;
+        }
+
+        /* 유저 텍스트 스타일 */
+        .user-text {
+            font-size: 0.8rem;
+            color: #ffffff; /* 흰색 유지 */
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 480px) {
+            .navbar .brand {
+                text-align: left !important; /* 강제 왼쪽 정렬 */
+            }
+        }
+
+    </style>
 </head>
 <body class="bg-gray-100">
-<header class="bg-blue-600 p-4 flex justify-between items-center">
-    <a href="/index.html" class="text-white text-2xl font-bold">coinfo</a>
-    <div class="flex items-center space-x-4">
-        <button class="text-white text-2xl"><i class="ph ph-bell"></i></button>
-        <span class="text-white">|</span>
-        <button class="text-white text-2xl"><i class="ph ph-user"></i></button>
+<!-- 네비게이션 바 -->
+<nav class="navbar">
+    <div class="brand">
+        <a href="/index.html" style="text-decoration: none; color: inherit;">Coinfo</a>
     </div>
-</header>
+    <div class="icons">
+        <!-- 알람 아이콘 (배지 포함) -->
+        <div style="position: relative; cursor: pointer;" onclick="location.href='/alert/alarm.html'">
+            <i class="fas fa-bell"></i>
+            <span class="badge">2+</span>
+        </div>
+
+        <!-- 세로 구분선 -->
+        <div class="divider"></div>
+
+        <!-- 유저 프로필 (텍스트 포함) -->
+        <span class="user-text" id="user-email"></span>
+        <!-- 로그인/로그아웃 아이콘 -->
+        <i id="auth-icon" class="fas" style="color: white; font-size: 30px; cursor: pointer;"></i>
+
+    </div>
+</nav>
+
 <div class="container mx-auto p-6 grid grid-cols-3 gap-6">
     <!-- 코인 차트 박스 -->
     <div class="bg-white p-3 rounded-lg shadow h-[23rem] col-span-2">
@@ -180,6 +280,34 @@
             document.getElementById("coin-info").textContent = "잘못된 접근입니다.";
         }
     });
+
+    //로그인 확인
+    async function checkUserLogin() {
+        try {
+            const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+            const email = await response.text(); // 응답을 텍스트로 변환
+
+            const userText = document.getElementById("user-email");
+            const authIcon = document.getElementById("auth-icon");
+
+            if (email.trim()) {
+                // 로그인 상태 → 이메일 표시
+                userText.textContent = email;
+            } else {
+                // 로그아웃 상태 → 로그인 버튼 활성화
+                userText.textContent = "";
+                authIcon.classList.add("fa-sign-in-alt"); // 🚪 들어가는 아이콘 (로그인)
+
+                authIcon.onclick = function() {
+                    location.href = "/login.html"; // 로그인 페이지로 이동
+                };
+            }
+        } catch (error) {
+            console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
+        }
+    }
+
+    checkUserLogin(); // 페이지 로드 시 실행
 
 </script>
 

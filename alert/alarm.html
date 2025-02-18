@@ -361,20 +361,24 @@
 
 <!-- 네비게이션 바 -->
 <nav class="navbar">
-    <div class="brand">Coinfo</div>
+    <div class="brand">
+        <a href="/index.html" style="text-decoration: none; color: inherit;">Coinfo</a>
+    </div>
     <div class="icons">
         <!-- 알람 아이콘 (배지 포함) -->
-        <div style="position: relative;">
+        <div style="position: relative; cursor: pointer;" onclick="location.href='/alert/alarm.html'">
             <i class="fas fa-bell"></i>
-            <span class="badge">1+</span>
+            <span class="badge">2+</span>
         </div>
 
         <!-- 세로 구분선 -->
         <div class="divider"></div>
 
         <!-- 유저 프로필 (텍스트 포함) -->
-        <span class="user-text">[1팀]Oops!</span>
-        <i class="fas fa-user-circle" style="color: white; font-size: 35px;"></i>
+        <span class="user-text" id="user-email"></span>
+        <!-- 로그인/로그아웃 아이콘 -->
+        <i id="auth-icon" class="fas" style="color: white; font-size: 30px; cursor: pointer;"></i>
+
     </div>
 </nav>
 
@@ -823,6 +827,34 @@
             }
         }
     });
+
+    //로그인 확인
+    async function checkUserLogin() {
+        try {
+            const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+            const email = await response.text(); // 응답을 텍스트로 변환
+
+            const userText = document.getElementById("user-email");
+            const authIcon = document.getElementById("auth-icon");
+
+            if (email.trim()) {
+                // 로그인 상태 → 이메일 표시
+                userText.textContent = email;
+            } else {
+                // 로그아웃 상태 → 로그인 버튼 활성화
+                userText.textContent = "";
+                authIcon.classList.add("fa-sign-in-alt"); // 🚪 들어가는 아이콘 (로그인)
+
+                authIcon.onclick = function() {
+                    location.href = "/login.html"; // 로그인 페이지로 이동
+                };
+            }
+        } catch (error) {
+            console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
+        }
+    }
+
+    checkUserLogin(); // 페이지 로드 시 실행
 </script>
 
 </body>

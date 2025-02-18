@@ -4,82 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Top 10 Coins</title>
+    <!-- WebSocket 관련 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <!-- <script src="/js/script.js" type="text/javascript" defer></script> -->
+    <script src="/js/index_front.js" type="text/javascript" defer></script>
+
     <!-- FontAwesome 아이콘 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!--Google Fonts-->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
 
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        /* 로그인 컨테이너 전체를 감싸는 영역 */
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh; /* 전체 화면 높이 */
-        }
-
-        /* 로그인 박스 (흰색 배경) */
-        .login-box {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 40px 50px;
-            width: 350px;
-            text-align: center;
-            position: relative;
-        }
-
-        /* Login 제목 스타일 */
-        .login-title {
-            color: #4e73df;
-            font-weight: 800;
-            font-size: 2rem;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        /* 소셜 로그인 버튼 스타일 */
-        .social-login-buttons {
-            display: flex;
-            flex-direction: column; /* 버튼을 세로 정렬 */
-            align-items: center;
-            gap: 15px; /* 버튼 간격 */
-            width: 100%;
-        }
-
-        .social-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 20px;
-            font-size: 18px;
-            border-radius: 30px;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        .google-button {
-            background-color: #4285F4;
-            color: white;
-        }
-
-        .kakao-button {
-            background-color: #F7E600;
-            color: black;
-        }
-
-        .google-button:hover, .kakao-button:hover {
-            opacity: 0.8;
-        }
-
-        .social-button i {
-            margin-right: 10px;
-        }
-
         /* 기본 스타일 */
         body {
             font-family: 'Nunito', sans-serif;
@@ -157,6 +95,60 @@
                 text-align: left !important; /* 강제 왼쪽 정렬 */
             }
         }
+
+        /* 'Top 10' 제목 스타일 */
+        .cards-title {
+            color: #4e73df;
+            font-weight: 800;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        /* 테이블을 감싸는 컨테이너 스타일 */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 테이블 스타일 */
+        #coin-table {
+            margin-top: 20px;
+            width: 80%;
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        #coin-table th, #coin-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #coin-table td:nth-child(2) {
+            min-width: 150px;
+        }
+
+        #coin-table th {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        #coin-table img {
+            max-width: 50px;
+            height: auto;
+        }
+
+        #coin-table tbody tr {
+            background-color: white;
+        }
     </style>
 </head>
 <body>
@@ -169,7 +161,7 @@
         <!-- 알람 아이콘 (배지 포함) -->
         <div style="position: relative; cursor: pointer;" onclick="location.href='/alert/alarm.html'">
             <i class="fas fa-bell"></i>
-            <span class="badge">2+</span>
+            <span class="badge">2+</span> <!-- 로그인 하면 동적으로 개수 변하게-->
         </div>
 
         <!-- 세로 구분선 -->
@@ -183,25 +175,27 @@
     </div>
 </nav>
 
-<!-- 로그인 -->
-<div class="login-container">
-    <div class="login-box">
-        <h1 class="login-title">Login</h1>
+<div class="container mx-auto p-6 grid grid-cols-3 gap-6"></div>
 
-        <!-- 소셜 로그인 버튼 -->
-        <div class="social-login-buttons">
-            <!-- 구글 로그인 버튼 -->
-            <a id="google-login-btn" class="social-button google-button" href="https://accounts.google.com/o/oauth2/auth?client_id=982183786748-c72u3quid3ma6ahcj5fjhqaq9h11esl9.apps.googleusercontent.com&redirect_uri=http://localhost:8080/login/oauth2/code/google&response_type=code&scope=profile+email">
-                <i class="fab fa-google"></i> Google 로그인
-            </a>
-
-            <!-- 카카오 로그인 버튼 -->
-            <button class="social-button kakao-button">
-                <i class="fas fa-comment"></i> Kakao 로그인
-            </button>
-        </div>
-    </div>
+<!-- 코인 테이블 섹션 -->
+<div class="cards-container">
+    <h2 class="cards-title">Top 10</h2>
+    <table id="coin-table">
+        <thead>
+        <tr>
+            <th>로고</th>
+            <th>이름</th>
+            <th>티커</th>
+            <th>현재가</th>
+            <th>전일 대비</th>
+            <th>거래액</th>
+        </tr>
+        </thead>
+        <tbody id="coin-table-body">
+        </tbody>
+    </table>
 </div>
+
 <script>
     //로그인 확인
     async function checkUserLogin() {
@@ -215,11 +209,12 @@
             if (email.trim()) {
                 // 로그인 상태 → 이메일 표시
                 userText.textContent = email;
+                alertIcon.style.display = "flex"; // 아이콘 표시
             } else {
                 // 로그아웃 상태 → 로그인 버튼 활성화
                 userText.textContent = "";
                 authIcon.classList.add("fa-sign-in-alt"); // 🚪 들어가는 아이콘 (로그인)
-
+                alertIcon.style.display = "none"; // 아이콘 숨김
                 authIcon.onclick = function() {
                     location.href = "/login.html"; // 로그인 페이지로 이동
                 };

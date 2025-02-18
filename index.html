@@ -209,12 +209,11 @@
             if (email.trim()) {
                 // 로그인 상태 → 이메일 표시
                 userText.textContent = email;
-                alertIcon.style.display = "flex"; // 아이콘 표시
             } else {
                 // 로그아웃 상태 → 로그인 버튼 활성화
                 userText.textContent = "";
                 authIcon.classList.add("fa-sign-in-alt"); // 🚪 들어가는 아이콘 (로그인)
-                alertIcon.style.display = "none"; // 아이콘 숨김
+
                 authIcon.onclick = function() {
                     location.href = "/login.html"; // 로그인 페이지로 이동
                 };
@@ -225,6 +224,7 @@
     }
 
     checkUserLogin(); // 페이지 로드 시 실행
+
 </script>
 </body>
 </html>

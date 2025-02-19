@@ -1,5 +1,5 @@
 // 백엔드 API 및 WebSocket 서버 주소
-const backendBaseUrl = "http://ec2-13-125-5-111.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 DNS 사용
+const backendBaseUrl = "http://ec2-3-34-126-16.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 DNS 사용
 
 
 const socket = new SockJS("${backendBaseUrl}/ws");

@@ -1,5 +1,5 @@
 // 백엔드 API 및 WebSocket 서버 주소
-const backendBaseUrl = "http://ec2-3-34-126-16.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 DNS 사용
+const backendBaseUrl = "http://ec2-3-35-27-75.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 DNS 사용
 
 // script 태그에서 data-ticker 값 가져오기
 const scriptTag = document.querySelector('script[src*="detail_front.js"]');
@@ -283,7 +283,7 @@ function formatKSTTooltip(time) {
 // 재연결 로직
 function reconnectWebSocket() {
     setTimeout(() => {
-        const newSocket = new SockJS("${backendBaseUrl}/ws");
+        const newSocket = new SockJS(`${backendBaseUrl}/ws`);
         stompClient.connect({}, function () {
             console.log("✅ WebSocket 재연결됨");
         }, function (error) {

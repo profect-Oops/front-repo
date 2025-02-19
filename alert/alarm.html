@@ -440,7 +440,7 @@
 
 <script>
 
-    const backendBaseUrl = "http:ec2-3-34-126-16.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 IP 또는 도메인 입력
+    const backendBaseUrl = "http://ec2-3-35-27-75.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 IP 또는 도메인 입력
     
 
     // 페이지가 로드될 때 알림 데이터를 조회
@@ -677,7 +677,7 @@
                 };
 
                 // 알림 저장 요청
-                const saveResponse = await fetch("${backendBaseUrl}/api/alert/save", {
+                const saveResponse = await fetch(`${backendBaseUrl}/api/alert/save`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -837,7 +837,7 @@
         try {
             //로컬
             //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
-            const response = await fetch('${backendBaseUrl}/api/user/email');
+            const response = await fetch(`${backendBaseUrl}/api/user/email`);
 
             const email = await response.text(); // 응답을 텍스트로 변환
 

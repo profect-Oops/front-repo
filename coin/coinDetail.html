@@ -172,6 +172,7 @@
 
 
 <script>
+    const backendBaseUrl = "http://ec2-3-35-27-75.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 DNS 사용
 
     document.addEventListener("DOMContentLoaded", function () {
         const urlParams = new URLSearchParams(window.location.search);
@@ -285,7 +286,7 @@
     //로그인 확인
     async function checkUserLogin() {
         try {
-            const response = await fetch('${backendBaseUrl}/api/user/email'); // 백엔드에서 이메일 가져오기
+            const response = await fetch(`${backendBaseUrl}/api/user/email`); // 백엔드에서 이메일 가져오기
             const email = await response.text(); // 응답을 텍스트로 변환
 
             const userText = document.getElementById("user-email");

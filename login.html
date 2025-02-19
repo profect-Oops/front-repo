@@ -203,26 +203,32 @@
     </div>
 </div>
 <script>
+    const backendBaseUrl = "https://ec2-13-125-5-111.ap-northeast-2.compute.amazonaws.com";  // EC2 퍼블릭 IP 또는 도메인 입력
+    
     //로그인 확인
     async function checkUserLogin() {
         try {
-            const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+            //로컬
+            //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+            const response = await fetch(`${backendBaseUrl}/api/user/email`);
+
             const email = await response.text(); // 응답을 텍스트로 변환
 
             const userText = document.getElementById("user-email");
-            const authIcon = document.getElementById("auth-icon");
+            const divider = document.querySelector(".divider");
 
             if (email.trim()) {
                 // 로그인 상태 → 이메일 표시
                 userText.textContent = email;
+                if (divider) {
+                    divider.style.display = "block"; // 로그인 상태면 표시
+                }
             } else {
                 // 로그아웃 상태 → 로그인 버튼 활성화
                 userText.textContent = "";
-                authIcon.classList.add("fa-sign-in-alt"); // 🚪 들어가는 아이콘 (로그인)
-
-                authIcon.onclick = function() {
-                    location.href = "/login.html"; // 로그인 페이지로 이동
-                };
+                if (divider) {
+                    divider.style.display = "none"; // 로그아웃 상태면 숨김
+                }
             }
         } catch (error) {
             console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);

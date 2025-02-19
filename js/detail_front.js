@@ -1,8 +1,11 @@
+// 백엔드 API 및 WebSocket 서버 주소
+const backendBaseUrl = "https://ec2-13-125-5-111.ap-northeast-2.compute.amazonaws.com";  // EC2 퍼블릭 DNS 사용
+
 // script 태그에서 data-ticker 값 가져오기
 const scriptTag = document.querySelector('script[src*="detail_front.js"]');
 const market = scriptTag && scriptTag.dataset.ticker ? `${scriptTag.dataset.ticker}` : "KRW-BTC";
 
-const socket = new SockJS("/ws");
+const socket = new SockJS("${backendBaseUrl}/ws");
 socket.binaryType = "arraybuffer";  // 바이너리 데이터 전송으로 변경
 const stompClient = Stomp.over(socket);
 
@@ -137,7 +140,7 @@ async function loadMoreHistoricalCandles() {
 
 // Redis에서 과거 캔들 데이터를 가져오기 (서버 요청)
 async function fetchHistoricalCandlesFromServer(count = 120, to = null) {
-    let url = `/api/redis/candles/${market}?count=${count}`;
+    let url = `${backendBaseUrl}/api/redis/candles/${market}?count=${count}`;
     if (to) {
         url += `&to=${encodeURIComponent(to)}`;  // ✅ `to` 값 RequestParam으로 추가
     }
@@ -280,7 +283,7 @@ function formatKSTTooltip(time) {
 // 재연결 로직
 function reconnectWebSocket() {
     setTimeout(() => {
-        const newSocket = new SockJS("/ws");
+        const newSocket = new SockJS("${backendBaseUrl}/ws");
         stompClient.connect({}, function () {
             console.log("✅ WebSocket 재연결됨");
         }, function (error) {

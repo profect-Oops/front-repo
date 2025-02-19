@@ -440,17 +440,20 @@
 
 <script>
 
+    const backendBaseUrl = "https://ec2-13-125-5-111.ap-northeast-2.compute.amazonaws.com";  // EC2 퍼블릭 IP 또는 도메인 입력
+    
+
     // 페이지가 로드될 때 알림 데이터를 조회
     window.addEventListener("DOMContentLoaded", async function() {
         try {
             // 알림 리스트 & 알림 개수 조회를 병렬로 실행하여 성능 최적화
             const [alertResponse, countResponse] = await Promise.all([
-                fetch("/api/alert/read", { // 알림 리스트 가져오기
+                fetch(`${backendBaseUrl}/api/alert/read`, { // 알림 리스트 가져오기
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include" // 세션 유지
                 }),
-                fetch("/api/alert/count", { // 총 알림 개수 가져오기
+                fetch(`${backendBaseUrl}/api/alert/count`, { // 총 알림 개수 가져오기
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include"
@@ -484,18 +487,18 @@
 
     // 알람 개수 업데이트 함수
     function updateAlertCounts() {
-    fetch("/api/alert/count", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(countData => {
-            document.getElementById("total-alerts").textContent = `${countData.total}개`;
-            document.getElementById("active-alerts").textContent = `${countData.on}개`;
-            document.getElementById("inactive-alerts").textContent = `${countData.off}개`;
+        fetch(`${backendBaseUrl}/api/alert/count`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
         })
-        .catch(error => console.error("알람 개수 업데이트 오류:", error));
+            .then(response => response.json())
+            .then(countData => {
+                document.getElementById("total-alerts").textContent = `${countData.total}개`;
+                document.getElementById("active-alerts").textContent = `${countData.on}개`;
+                document.getElementById("inactive-alerts").textContent = `${countData.off}개`;
+            })
+            .catch(error => console.error("알람 개수 업데이트 오류:", error));
     }
 
 
@@ -572,7 +575,7 @@
                 const alertActive = switchInput.checked;
 
                 try {
-                    const response = await fetch(`/api/alert/update/${alertId}`, {
+                    const response = await fetch(`${backendBaseUrl}/api/alert/update/${alertId}`, {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ alertActive: alertActive })
@@ -627,7 +630,7 @@
             const newAlertPrice = parseFloat(document.getElementById("price-search").value);
 
             try {
-                const response = await fetch(`/api/alert/update/price/${alertId}`, {
+                const response = await fetch(`${backendBaseUrl}/api/alert/update/price/${alertId}`, {
                     method: "PATCH",
                     headers: {
                         "Content-Type": "application/json"
@@ -674,7 +677,7 @@
                 };
 
                 // 알림 저장 요청
-                const saveResponse = await fetch("/api/alert/save", {
+                const saveResponse = await fetch("${backendBaseUrl}/api/alert/save", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -804,7 +807,7 @@
             }
 
             try {
-                const response = await fetch(`/api/alert/delete/${alertId}`, {
+                const response = await fetch(`${backendBaseUrl}/api/alert/delete/${alertId}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json"
@@ -828,26 +831,31 @@
         }
     });
 
+    
     //로그인 확인
     async function checkUserLogin() {
         try {
-            const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+            //로컬
+            //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+            const response = await fetch('${backendBaseUrl}/api/user/email');
+
             const email = await response.text(); // 응답을 텍스트로 변환
 
             const userText = document.getElementById("user-email");
-            const authIcon = document.getElementById("auth-icon");
+            const divider = document.querySelector(".divider");
 
             if (email.trim()) {
                 // 로그인 상태 → 이메일 표시
                 userText.textContent = email;
+                if (divider) {
+                    divider.style.display = "block"; // 로그인 상태면 표시
+                }
             } else {
                 // 로그아웃 상태 → 로그인 버튼 활성화
                 userText.textContent = "";
-                authIcon.classList.add("fa-sign-in-alt"); // 🚪 들어가는 아이콘 (로그인)
-
-                authIcon.onclick = function() {
-                    location.href = "/login.html"; // 로그인 페이지로 이동
-                };
+                if (divider) {
+                    divider.style.display = "none"; // 로그아웃 상태면 숨김
+                }
             }
         } catch (error) {
             console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);

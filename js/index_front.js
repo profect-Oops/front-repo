@@ -1,4 +1,8 @@
-const socket = new SockJS("/ws");
+// 백엔드 API 및 WebSocket 서버 주소
+const backendBaseUrl = "https://ec2-13-125-5-111.ap-northeast-2.compute.amazonaws.com";  // EC2 퍼블릭 DNS 사용
+
+
+const socket = new SockJS("${backendBaseUrl}/ws");
 const stompClient = Stomp.over(socket);
 
 // 관심 있는 코인 목록
@@ -123,7 +127,7 @@ function updateTable(ticker) {
 function reconnectWebSocket() {
     console.log("🔄 WebSocket 재연결 시도...");
     setTimeout(() => {
-        const newSocket = new SockJS("/ws");
+        const newSocket = new SockJS("${backendBaseUrl}/ws");
         stompClient.connect({}, function () {
             console.log("✅ WebSocket 재연결됨");
         }, function (error) {
@@ -137,7 +141,7 @@ function reconnectWebSocket() {
 async function addCoinsToServer(coins) {
     try {
         // 1. 서버에 저장된 코인 목록 가져오기
-        const existingCoinsResponse = await fetch('/api/coin/list');
+        const existingCoinsResponse = await fetch('${backendBaseUrl}/api/coin/list');
         const existingCoins = await existingCoinsResponse.json(); // 저장된 코인 목록
 
         const existingTickers = new Set(existingCoins.map(coin => coin.ticker)); // 존재하는 티커 집합
@@ -157,7 +161,7 @@ async function addCoinsToServer(coins) {
         }
 
         // 3. 서버에 새로운 코인 정보 추가 요청
-        const response = await fetch('/api/coin/add', {
+        const response = await fetch('${backendBaseUrl}/api/coin/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -172,5 +176,4 @@ async function addCoinsToServer(coins) {
         console.error("🚨 서버에 코인 정보를 저장하는 중 오류 발생:", error);
     }
 }
-
 

@@ -172,9 +172,10 @@
 
 
 <script>
-    const backendBaseUrl = "http://ec2-3-35-27-75.ap-northeast-2.compute.amazonaws.com:8080";  // EC2 퍼블릭 DNS 사용
-
+    
     document.addEventListener("DOMContentLoaded", function () {
+        const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
+
         const urlParams = new URLSearchParams(window.location.search);
         const coinName = urlParams.get("name");
         const coinTicker = urlParams.get("ticker");

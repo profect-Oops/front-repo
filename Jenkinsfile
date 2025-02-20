@@ -19,11 +19,9 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    dir('frontend') {
                         sh 'mkdir -p dist/js'
                         // frontend 내부 모든 파일을 dist로 복사하지만, Jenkinsfile과 .git 폴더는 제외
                         sh 'rsync -av --exclude "Jenkinsfile" --exclude ".git" --exclude ".idea" . dist/'
-                    }
                 }
             }
         }

@@ -1,5 +1,5 @@
 // 백엔드 API 및 WebSocket 서버 주소
-const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
+const backendBaseUrl = "http://localhost:8080";  // EC2 퍼블릭 DNS 사용
 
 
 const socket = new SockJS(`${backendBaseUrl}/ws`);
@@ -137,7 +137,7 @@ function reconnectWebSocket() {
 }
 
 
-// 서버에 10개 코인 정보 DB insert 요청 (이미 존재하는 코인은 제외)
+// 서버에 10개 코인 정보 DB insert 요청 (이미 존재하는 코인은 Update)
 async function addCoinsToServer(coins) {
     try {
         // 1. 서버에 저장된 코인 목록 가져오기
@@ -146,34 +146,58 @@ async function addCoinsToServer(coins) {
 
         const existingTickers = new Set(existingCoins.map(coin => coin.ticker)); // 존재하는 티커 집합
 
-        // 2. 객체를 배열로 변환하고 중복되지 않은 코인만 필터링
-        const newCoins = Object.values(coins)
-            .filter(coinInfo => !existingTickers.has(coinInfo.ticker)) // 중복 제외
-            .map(coinInfo => ({
+        // 2. 새로운 코인과 기존 코인을 분류
+        const newCoins = [];
+        const coinsToUpdate = [];
+
+        Object.values(coins).forEach(coinInfo => {
+            const coinData = {
                 ticker: coinInfo.ticker,
                 name: coinInfo.name,
                 picture: `https://static.upbit.com/logos/${coinInfo.ticker.replace("KRW-", "")}.png`
-            }));
+            };
 
-        if (newCoins.length === 0) {
-            console.log("✅ 추가할 새로운 코인이 없습니다.");
-            return;
-        }
-
-        // 3. 서버에 새로운 코인 정보 추가 요청
-        const response = await fetch(`${backendBaseUrl}/api/coin/add`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(newCoins) // 중복되지 않은 코인만 전송
+            if (existingTickers.has(coinInfo.ticker)) {
+                coinsToUpdate.push(coinData); // 업데이트할 코인
+            } else {
+                newCoins.push(coinData); // 새로 추가할 코인
+            }
         });
 
-        const result = await response.json(); // 응답 데이터 처리
-        console.log("✅ 서버에 저장된 신규 코인:", result);
+        // 3. 이미 존재하는 코인 정보 업데이트
+        if (coinsToUpdate.length > 0) {
+            const updateResponse = await fetch(`${backendBaseUrl}/api/coin/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(coinsToUpdate) // 업데이트할 코인 목록 전송
+            });
+
+            const updateResult = await updateResponse.json();
+            console.log("✅ 업데이트된 코인 정보:", updateResult);
+        }
+
+        // 4. 새로운 코인 추가
+        if (newCoins.length > 0) {
+            const addResponse = await fetch(`${backendBaseUrl}/api/coin/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newCoins) // 새 코인 목록 전송
+            });
+
+            const addResult = await addResponse.json();
+            console.log("✅ 서버에 저장된 신규 코인:", addResult);
+        }
+
+        // 5. 작업 완료 로그
+        if (coinsToUpdate.length === 0 && newCoins.length === 0) {
+            console.log("✅ 모든 코인이 최신 상태입니다.");
+        }
 
     } catch (error) {
-        console.error("🚨 서버에 코인 정보를 저장하는 중 오류 발생:", error);
+        console.error("🚨 서버에 코인 정보를 동기화하는 중 오류 발생:", error);
     }
 }
-

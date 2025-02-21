@@ -1,11 +1,11 @@
 // 백엔드 API 및 WebSocket 서버 주소
-const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
+const backendBaseUrl = "http://localhost:8080";  // EC2 퍼블릭 DNS 사용
 
 // script 태그에서 data-ticker 값 가져오기
 const scriptTag = document.querySelector('script[src*="detail_front.js"]');
 const market = scriptTag && scriptTag.dataset.ticker ? `${scriptTag.dataset.ticker}` : "KRW-BTC";
 
-const socket = new SockJS("${backendBaseUrl}/ws");
+const socket = new SockJS(`${backendBaseUrl}/ws`);
 socket.binaryType = "arraybuffer";  // 바이너리 데이터 전송으로 변경
 const stompClient = Stomp.over(socket);
 

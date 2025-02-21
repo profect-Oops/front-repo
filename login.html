@@ -167,7 +167,7 @@
     </div>
     <div class="icons">
         <!-- 알람 아이콘 (배지 포함) -->
-        <div style="position: relative; cursor: pointer;" onclick="location.href='/alert/alarm.html'">
+        <div style="position: relative; cursor: pointer;" onclick="location.href='alert/alarm.html'">
             <i class="fas fa-bell"></i>
             <span class="badge">2+</span>
         </div>
@@ -191,7 +191,7 @@
         <!-- 소셜 로그인 버튼 -->
         <div class="social-login-buttons">
             <!-- 구글 로그인 버튼 -->
-            <a id="google-login-btn" class="social-button google-button" href="https://accounts.google.com/o/oauth2/auth?client_id=982183786748-c72u3quid3ma6ahcj5fjhqaq9h11esl9.apps.googleusercontent.com&redirect_uri=http://localhost:8080/login/oauth2/code/google&response_type=code&scope=profile+email">
+            <a id="google-login-btn" class="social-button google-button" href="https://accounts.google.com/o/oauth2/auth?client_id=982183786748-tcro3aco6sn5tjlmigla2fpk6k39kjfi.apps.googleusercontent.com&redirect_uri=http://localhost:8080/login/oauth2/code/google&response_type=code&scope=profile+email">
                 <i class="fab fa-google"></i> Google 로그인
             </a>
 
@@ -203,7 +203,7 @@
     </div>
 </div>
 <script>
-    const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 IP 또는 도메인 입력
+    const backendBaseUrl = "http://localhost:8080";  // EC2 퍼블릭 IP 또는 도메인 입력
     
     //로그인 확인
     async function checkUserLogin() {

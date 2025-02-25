@@ -1,5 +1,5 @@
 // 백엔드 API 및 WebSocket 서버 주소
-const backendBaseUrl = "http://localhost:8080";  // EC2 퍼블릭 DNS 사용
+const backendBaseUrl = "https://api.todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
 
 
 const socket = new SockJS(`${backendBaseUrl}/ws`);

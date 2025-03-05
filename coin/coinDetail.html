@@ -174,11 +174,14 @@
 <script>
     //URL 고칠거 2개!!
     document.addEventListener("DOMContentLoaded", function () {
-        const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
+        const backendBaseUrl = "https://api.todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
 
         const urlParams = new URLSearchParams(window.location.search);
         const coinName = urlParams.get("name");
         const coinTicker = urlParams.get("ticker");
+
+        console.log("📌 원본 coinName:", coinName);
+        console.log("📌 인코딩된 coinName:", encodeURIComponent(coinName));
 
         // Upbit WebSocket 스크립트에 코인 티커 전달
         const script = document.createElement("script");
@@ -186,6 +189,11 @@
         script.src = `../js/detail_front.js`;
         script.dataset.ticker = coinTicker;
         document.body.appendChild(script);
+
+        console.log("📌 원본 coinTicker:", coinTicker);
+        const apiUrl = `${backendBaseUrl}/api/coin/details/${encodeURIComponent(coinName)}`;
+        console.log("📌 요청할 API URL:", apiUrl);
+
         logo = `${coinTicker}`.replace("KRW-","");
         if (coinName && coinTicker) {
             document.getElementById("coin-logo").src = `https://static.upbit.com/logos/${logo}.png`;
@@ -193,7 +201,13 @@
             document.getElementById("coin-name").textContent = coinName;
             document.getElementById("coin-ticker").textContent = `KRW-${coinTicker}`;
 
-            fetch(`${backendBaseUrl}/api/coin/details/${coinName}`)
+            fetch(`${backendBaseUrl}/api/coin/details/${encodeURIComponent(coinName)}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    }
+                })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("코인 정보를 찾을 수 없습니다.");
@@ -284,35 +298,35 @@
         }
     });
 
-    //로그인 확인
-    async function checkUserLogin() {
-        const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
-        try {
-            const response = await fetch(`${backendBaseUrl}/api/user/email`); // 백엔드에서 이메일 가져오기
-            const email = await response.text(); // 응답을 텍스트로 변환
+    // //로그인 확인
+    // async function checkUserLogin() {
+    //     const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
+    //     try {
+    //         const response = await fetch(`${backendBaseUrl}/api/user/email`); // 백엔드에서 이메일 가져오기
+    //         const email = await response.text(); // 응답을 텍스트로 변환
 
-            const userText = document.getElementById("user-email");
-            const divider = document.querySelector(".divider");
+    //         const userText = document.getElementById("user-email");
+    //         const divider = document.querySelector(".divider");
 
-            if (email.trim()) {
-                // 로그인 상태 → 이메일 표시
-                userText.textContent = email;
-                if (divider) {
-                    divider.style.display = "block"; // 로그인 상태면 표시
-                }
-            } else {
-                // 로그아웃 상태 → 로그인 버튼 활성화
-                userText.textContent = "";
-                if (divider) {
-                    divider.style.display = "none"; // 로그아웃 상태면 숨김
-                }
-            }
-        } catch (error) {
-            console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
-        }
-    }
+    //         if (email.trim()) {
+    //             // 로그인 상태 → 이메일 표시
+    //             userText.textContent = email;
+    //             if (divider) {
+    //                 divider.style.display = "block"; // 로그인 상태면 표시
+    //             }
+    //         } else {
+    //             // 로그아웃 상태 → 로그인 버튼 활성화
+    //             userText.textContent = "";
+    //             if (divider) {
+    //                 divider.style.display = "none"; // 로그아웃 상태면 숨김
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
+    //     }
+    // }
 
-    checkUserLogin(); // 페이지 로드 시 실행
+    // checkUserLogin(); // 페이지 로드 시 실행
 
 </script>
 

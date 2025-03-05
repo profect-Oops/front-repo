@@ -85,7 +85,8 @@ function updateTable(ticker) {
     let existingRow = tableBody.querySelector(`tr[data-ticker="${ticker}"]`);
 
     const priceChange = (coin.changeRate * 100).toFixed(2);
-    const changeClass = priceChange > 0 ? "text-green-500" : priceChange < 0 ? "text-red-500" : "text-gray-500";
+    const priceChangeColor = priceChange > 0 ? "red" : priceChange < 0 ? "blue" : "black"; // 상승 → 빨간색, 하락 → 파란색, 동일 → 검정색
+    const changeClass = priceChange > 0 ? "text-red-500" : priceChange < 0 ? "text-blue-500" : "text-gray-500";
     const volume = coin.acc_trade_price_24h ? (coin.acc_trade_price_24h / 1e9).toFixed(1) + "억" : "-";
     const coinInfo = marketNames[ticker] || { name: ticker, ticker };
     const logo = ticker.replace("KRW-", "");
@@ -94,7 +95,7 @@ function updateTable(ticker) {
         // ✅ 기존 행 업데이트
         existingRow.querySelector(".price").textContent = `₩${coin.price.toLocaleString()}`;
         existingRow.querySelector(".change").textContent = `${priceChange}%`;
-        existingRow.querySelector(".change").className = `change ${changeClass}`;
+        existingRow.querySelector(".change").style.color = priceChangeColor; // 색상 적용
         existingRow.querySelector(".volume").textContent = volume;
         return true; // 업데이트 성공
     } else {
@@ -106,7 +107,7 @@ function updateTable(ticker) {
             <td>${coinInfo.name}</td>
             <td>${coinInfo.ticker}</td>
             <td class="price">₩${coin.price.toLocaleString()}</td>
-            <td class="change ${changeClass}">${priceChange}%</td>
+            <td class="change" style="color: ${priceChangeColor}; font-weight: bold;">${priceChange}%</td>
             <td class="volume">${volume}</td>
         `;
 
@@ -122,7 +123,6 @@ function updateTable(ticker) {
         return true; // 새 행 추가 성공
     }
 }
-
 
 // ✅ WebSocket 재연결 함수
 function reconnectWebSocket() {

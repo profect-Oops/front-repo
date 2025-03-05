@@ -355,6 +355,57 @@
             }
         }
 
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        input:checked + .slider {
+            background-color: #4e73df;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        small {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+
     </style>
 </head>
 <body>
@@ -366,7 +417,7 @@
     </div>
     <div class="icons">
         <!-- 알람 아이콘 (배지 포함) -->
-        <div style="position: relative; cursor: pointer;" onclick="location.href='/alarm.html'">
+        <div style="position: relative; cursor: pointer;" onclick="location.href='/alert/alarm.html'">
             <i class="fas fa-bell"></i>
             <span class="badge">2+</span>
         </div>
@@ -381,6 +432,7 @@
 
     </div>
 </nav>
+
 
 <!-- 카드 섹션 -->
 <div class="card-container">
@@ -410,12 +462,23 @@
     <div class="input-group-wrapper">
         <div class="input-group">
             <label>종목:</label>
-            <input type="text" id="stock-search" placeholder="검색">
+            <input type="text" id="stock-search" placeholder="코인명 입력">
         </div>
         <div class="input-group">
             <label>가격:</label>
-            <input type="text" id="price-search" placeholder="검색">
+            <input type="text" id="price-search" placeholder="가격 입력">
         </div>
+
+        <!-- 초과/이하 선택 토글 -->
+        <div class="input-group">
+            <label>알림 조건:</label>
+            <label class="switch">
+                <input type="checkbox" id="alert-condition-toggle" onchange="updateAlertMessage()">
+                <span class="slider round"></span>
+            </label>
+            <small id="condition-text">초과하면 알림</small>
+        </div>
+
         <button id="saveAlertButton">설정</button>
     </div>
 </div>
@@ -428,7 +491,8 @@
         <tr>
             <th>코인 이름</th>
             <th>알림 설정 가격</th>
-            <th>알림 설정</th>
+            <th>알림 조건</th>
+            <th>알림 활성화</th>
             <th>수정</th>
             <th>삭제</th>
         </tr>
@@ -521,7 +585,15 @@
             const alertPriceCell = document.createElement("td");
             alertPriceCell.textContent = `₩${alert.alertPrice.toLocaleString()}`; // 숫자 포맷 적용
 
-            // 알림 설정 (스위치)
+            // 알림 조건 (초과/이하)
+            const alertConditionCell = document.createElement("td");
+
+            const conditionText = document.createElement("span");
+            conditionText.textContent = alert.alertCondition === "BELOW" ? "이하" : "초과";
+
+            alertConditionCell.appendChild(conditionText);
+
+            // 알림 활성화 설정 (스위치)
             const alertActiveCell = document.createElement("td");
             const switchLabel = document.createElement("label");
             switchLabel.classList.add("switch");
@@ -561,10 +633,12 @@
             // 테이블에 행 추가
             row.appendChild(coinNameCell);
             row.appendChild(alertPriceCell);
+            row.appendChild(alertConditionCell);
             row.appendChild(alertActiveCell);
             row.appendChild(editCell);
             row.appendChild(deleteCell);
             tableBody.appendChild(row);
+
         });
 
         // 이벤트 리스너 추가 (이벤트 위임 방식 적용)
@@ -604,12 +678,29 @@
                 const coinName = row.cells[0].textContent;
                 const alertPrice = row.cells[1].textContent.replace("₩", "").replace(",", "");
 
+                // 조건 값 가져오기 (기존 방식이 오류를 유발할 수 있어 개선)
+                const alertConditionText = row.cells[2] ? row.cells[2].textContent.trim() : "";
+
+                console.log("수정할 조건:", alertConditionText); // 콘솔 디버깅
+
                 // 입력 필드에 알림 정보 채우기
                 document.getElementById("stock-search").value = coinName;
                 document.getElementById("price-search").value = alertPrice;
 
                 // 종목 입력란 비활성화
                 document.getElementById("stock-search").disabled = true;
+
+                // 현재 알림 조건(초과/이하)에 따라 토글 반영
+                const toggle = document.getElementById("alert-condition-toggle");
+                const conditionText = document.getElementById("condition-text");
+
+                if (alertConditionText === "이하") {
+                    toggle.checked = true; // 이하면 토글 체크
+                    conditionText.textContent = "이하면 알림";
+                } else {
+                    toggle.checked = false; // 초과이면 토글 해제
+                    conditionText.textContent = "초과하면 알림";
+                }
 
                 // 저장 버튼 텍스트 변경
                 document.getElementById("saveAlertButton").textContent = "수정";
@@ -628,25 +719,38 @@
         if (alertId) {
             // 알림 수정 로직
             const newAlertPrice = parseFloat(document.getElementById("price-search").value);
+            const alertCondition = document.getElementById("alert-condition-toggle").checked ? "BELOW" : "ABOVE";
 
             try {
-                const response = await fetch(`${backendBaseUrl}/api/alert/update/price/${alertId}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ alertPrice: newAlertPrice }),
-                    credentials: "include"
-                });
+                // 두 개의 PATCH 요청을 병렬로 실행
+                const [response, response2] = await Promise.all([
+                    fetch(`${backendBaseUrl}/api/alert/update/price/${alertId}`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ alertPrice: newAlertPrice }),
+                        credentials: "include"
+                    }),
+                    fetch(`${backendBaseUrl}/api/alert/update/alertCondition/${alertId}`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ alertCondition: alertCondition }),  // 수정: alertPrice → alertCondition
+                        credentials: "include"
+                    })
+                ]);
 
-                const result = await response.json();
+                // 두 개의 응답을 JSON으로 변환
+                const [result1, result2] = await Promise.all([response.json(), response2.json()]);
 
-                if (result.result.code === "0000") {
-                    alert("알림 가격이 성공적으로 수정되었습니다!");
-                    // 수정된 알림 정보로 테이블 업데이트
-                    updateAlertInTable(alertId, newAlertPrice);
+                // 두 요청이 모두 성공해야 최종 성공 처리
+                if (result1.result.code === "0000" && result2.result.code === "0000") {
+                    alert("✅ 알림 가격과 조건이 성공적으로 수정되었습니다!");
+                    updateAlertInTable(alertId, newAlertPrice, alertCondition); // 테이블 업데이트
                 } else {
-                    alert("알림 가격 수정에 실패했습니다.");
+                    alert("⚠️ 알림 수정에 실패했습니다.");
                 }
             } catch (error) {
                 console.error("알림 가격 수정 오류:", error);
@@ -662,6 +766,7 @@
         } else {
             //알림 새로 저장
             const coinName = document.getElementById("stock-search").value; // 사용자가 입력한 종목 값
+            const alertCondition = document.getElementById("alert-condition-toggle").checked ? "BELOW" : "ABOVE";
 
             if (!coinName) {
                 alert("코인명을 입력해주세요.");
@@ -673,7 +778,8 @@
                 const alertRequest = {
                     coinName: coinName,
                     alertPrice: parseFloat(document.getElementById("price-search").value), // 알림 가격 입력
-                    alertActive: true // 알림 활성화 여부
+                    alertActive: true, // 알림 활성화 여부
+                    alertCondition: alertCondition  // "ABOVE" = 초과, "BELOW" = 이하
                 };
 
                 // 알림 저장 요청
@@ -695,6 +801,7 @@
                         coinName: coinName,
                         alertPrice: alertRequest.alertPrice,
                         alertActive: true,
+                        alertCondition: alertCondition,
                         alertId: saveResult.data.alertId // 서버에서 생성된 alertId 사용
                     };
                     updateAlertCounts();
@@ -727,6 +834,19 @@
         // 알림 가격
         const alertPriceCell = document.createElement("td");
         alertPriceCell.textContent = `₩${newAlert.alertPrice.toLocaleString()}`; // 숫자 포맷 적용
+
+        // 알림 조건 (초과/이하)
+        const alertConditionCell = document.createElement("td");
+        const conditionText = document.createElement("span");
+
+        // 올바른 조건 값 반영
+        if (newAlert.alertCondition === "BELOW") {
+            conditionText.textContent = "이하";
+        } else {
+            conditionText.textContent = "초과";
+        }
+
+        alertConditionCell.appendChild(conditionText);
 
         // 알림 설정 (스위치)
         const alertActiveCell = document.createElement("td");
@@ -769,6 +889,7 @@
         // 테이블에 행 추가
         row.appendChild(coinNameCell);
         row.appendChild(alertPriceCell);
+        row.appendChild(alertConditionCell);
         row.appendChild(alertActiveCell);
         row.appendChild(editCell);
         row.appendChild(deleteCell);
@@ -784,14 +905,20 @@
 
 
     // 수정된 알림 정보로 테이블 업데이트
-    function updateAlertInTable(alertId, newAlertPrice) {
+    function updateAlertInTable(alertId, newAlertPrice, newAlertCondition) {
         const tableRows = document.querySelectorAll("#coin-table tr");
 
         tableRows.forEach(row => {
             const rowAlertId = row.querySelector(".edit-button").getAttribute("data-alert-id");
             if (rowAlertId === alertId) {
-                //가격 업데이트
+                // 가격 업데이트
                 row.cells[1].textContent = `₩${newAlertPrice.toLocaleString()}`;
+
+                // 알림 조건 업데이트 (초과/이하)
+                const conditionText = row.cells[2].querySelector("span");
+                if (conditionText) {
+                    conditionText.textContent = newAlertCondition === "BELOW" ? "이하" : "초과";
+                }
             }
         });
     }
@@ -831,7 +958,22 @@
         }
     });
 
-    
+    function updateAlertMessage() {
+        const toggle = document.getElementById("alert-condition-toggle");
+        const conditionText = document.getElementById("condition-text");
+
+        // 토글 상태에 따라 텍스트 변경
+        if (toggle.checked) {
+            conditionText.textContent = "이하면 알림";
+        } else {
+            conditionText.textContent = "초과하면 알림";
+        }
+    }
+
+    // 토글 변경 시 이벤트 리스너 추가
+    document.getElementById("alert-condition-toggle").addEventListener("change", updateAlertMessage);
+
+
     //로그인 확인
     async function checkUserLogin() {
         try {

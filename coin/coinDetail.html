@@ -202,12 +202,12 @@
             document.getElementById("coin-ticker").textContent = `KRW-${coinTicker}`;
 
             fetch(`${backendBaseUrl}/api/coin/details/${encodeURIComponent(coinName)}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
-                    }
-                })
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                }
+            })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error("코인 정보를 찾을 수 없습니다.");
@@ -228,19 +228,19 @@
                     const emotionText = document.getElementById("emotion-text");
                     const prospects = data.coin.prospects;
 
-                    if (prospects < -3) {
+                    if (-1 <= prospects && prospects < -0.6) {
                         emotionDisplay.textContent = "😢";
                         emotionText.textContent = "매우 부정적";
-                    } else if (prospects >= -3 && prospects < 0) {
+                    } else if (-0.6 <= prospects && prospects < -0.2) {
                         emotionDisplay.textContent = "😞";
                         emotionText.textContent = "다소 부정적";
-                    } else if (prospects === 0) {
+                    } else if (-0.2 <= prospects && prospects < 0.2) {
                         emotionDisplay.textContent = "😐";
                         emotionText.textContent = "중립";
-                    } else if (prospects > 0 && prospects <= 3) {
+                    } else if (0.2 <= prospects && prospects < 0.6) {
                         emotionDisplay.textContent = "😊";
                         emotionText.textContent = "긍정적";
-                    } else if (prospects > 3) {
+                    } else if (0.6 <= prospects && prospects <= 1) {
                         emotionDisplay.textContent = "😃";
                         emotionText.textContent = "매우 긍정적";
                     }

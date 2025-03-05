@@ -2,6 +2,7 @@
 const backendBaseUrl = "https://api.todaycoinfo.com";  // EC2 퍼블릭 DNS 사용
 
 
+
 const socket = new SockJS(`${backendBaseUrl}/ws`);
 const stompClient = Stomp.over(socket);
 
@@ -136,66 +137,63 @@ function reconnectWebSocket() {
     }, 5000);
 }
 
-
 // 서버에 10개 코인 정보 DB insert 요청 (이미 존재하는 코인은 Update)
 async function addCoinsToServer(coins) {
     try {
-        // 1. 서버에 저장된 코인 목록 가져오기
+        // 1. 서버에서 현재 저장된 코인 목록 가져오기
         const existingCoinsResponse = await fetch(`${backendBaseUrl}/api/coin/list`);
         const existingCoins = await existingCoinsResponse.json(); // 저장된 코인 목록
 
-        const existingTickers = new Set(existingCoins.map(coin => coin.ticker)); // 존재하는 티커 집합
+        // 기존 저장된 코인을 티커 기준으로 Map에 저장하여 빠른 검색 가능하게 설정
+        const existingCoinMap = new Map(existingCoins.map(coin => [coin.ticker, coin]));
 
-        // 2. 새로운 코인과 기존 코인을 분류
+        // 2. 중복을 방지하기 위해 새로운 코인과 기존 코인을 분류
         const newCoins = [];
         const coinsToUpdate = [];
 
         Object.values(coins).forEach(coinInfo => {
-            const coinData = {
-                ticker: coinInfo.ticker,
-                name: coinInfo.name,
-                picture: `https://static.upbit.com/logos/${coinInfo.ticker.replace("KRW-", "")}.png`
-            };
+            const ticker = coinInfo.ticker;
+            const name = coinInfo.name;
+            const picture = `https://static.upbit.com/logos/${ticker.replace("KRW-", "")}.png`;
 
-            if (existingTickers.has(coinInfo.ticker)) {
-                coinsToUpdate.push(coinData); // 업데이트할 코인
+            if (existingCoinMap.has(ticker)) {
+                // ✅ 기존에 존재하는 경우 업데이트 목록에 추가 (이름이나 이미지가 변경되었을 경우만)
+                const existingCoin = existingCoinMap.get(ticker);
+
+                if (existingCoin.name !== name || existingCoin.picture !== picture) {
+                    coinsToUpdate.push({ ticker, name, picture });
+                }
             } else {
-                newCoins.push(coinData); // 새로 추가할 코인
+                // ✅ 새로운 코인만 추가
+                newCoins.push({ ticker, name, picture });
             }
         });
 
-        // 3. 이미 존재하는 코인 정보 업데이트
-        if (coinsToUpdate.length > 0) {
-            const updateResponse = await fetch(`${backendBaseUrl}/api/coin/update`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(coinsToUpdate) // 업데이트할 코인 목록 전송
-            });
-
-            const updateResult = await updateResponse.json();
-            console.log("✅ 업데이트된 코인 정보:", updateResult);
-        }
-
-        // 4. 새로운 코인 추가
+        // 3. 중복 방지: 새로운 코인만 추가 요청
         if (newCoins.length > 0) {
             const addResponse = await fetch(`${backendBaseUrl}/api/coin/add`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newCoins) // 새 코인 목록 전송
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newCoins)
             });
 
             const addResult = await addResponse.json();
-            console.log("✅ 서버에 저장된 신규 코인:", addResult);
+            console.log("✅ 서버에 추가된 신규 코인:", addResult);
         }
 
-        // 5. 작업 완료 로그
-        if (coinsToUpdate.length === 0 && newCoins.length === 0) {
-            console.log("✅ 모든 코인이 최신 상태입니다.");
+        // 4. 기존 코인은 업데이트만 수행 (이름 또는 이미지가 변경된 경우)
+        if (coinsToUpdate.length > 0) {
+            const updateResponse = await fetch(`${backendBaseUrl}/api/coin/update`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(coinsToUpdate)
+            });
+
+            const updateResult = await updateResponse.json();
+            console.log("✅ 서버에서 업데이트된 코인:", updateResult);
         }
+
+        console.log("🚀 동기화 완료");
 
     } catch (error) {
         console.error("🚨 서버에 코인 정보를 동기화하는 중 오류 발생:", error);

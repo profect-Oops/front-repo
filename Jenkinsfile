@@ -34,15 +34,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Invalidate CloudFront Cache') {
-            steps {
-                script {
-                    // CloudFront 캐시 무효화
-                    sh "aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_DISTRIBUTION_ID} --paths '/*'"
-                }
-            }
-        }
     }
 
     post {

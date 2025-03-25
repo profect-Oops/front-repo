@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!--Google Fonts-->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
-
+    <link rel="icon" href="https://todaycoinfo.com/favicon.ico" type="image/x-icon">
 
     <style>
         /* 기본 스타일 */
@@ -503,9 +503,11 @@
 </div>
 
 <script>
+    if (window.location.protocol !== "https:") {
+        window.location.href = "https://" + window.location.hostname + window.location.pathname + window.location.search;
+    }
 
-    const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 IP 또는 도메인 입력
-    
+    const backendBaseUrl = "https://api.todaycoinfo.com";  // EC2 퍼블릭 IP 또는 도메인 입력
 
     // 페이지가 로드될 때 알림 데이터를 조회
     window.addEventListener("DOMContentLoaded", async function() {
@@ -973,38 +975,37 @@
     // 토글 변경 시 이벤트 리스너 추가
     document.getElementById("alert-condition-toggle").addEventListener("change", updateAlertMessage);
 
-
     //로그인 확인
-    async function checkUserLogin() {
-        try {
-            //로컬
-            //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
-            const response = await fetch(`${backendBaseUrl}/api/user/email`);
+    // async function checkUserLogin() {
+    //     try {
+    //         //로컬
+    //         //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+    //         const response = await fetch(`${backendBaseUrl}/api/user/email`);
 
-            const email = await response.text(); // 응답을 텍스트로 변환
+    //         const email = await response.text(); // 응답을 텍스트로 변환
 
-            const userText = document.getElementById("user-email");
-            const divider = document.querySelector(".divider");
+    //         const userText = document.getElementById("user-email");
+    //         const divider = document.querySelector(".divider");
 
-            if (email.trim()) {
-                // 로그인 상태 → 이메일 표시
-                userText.textContent = email;
-                if (divider) {
-                    divider.style.display = "block"; // 로그인 상태면 표시
-                }
-            } else {
-                // 로그아웃 상태 → 로그인 버튼 활성화
-                userText.textContent = "";
-                if (divider) {
-                    divider.style.display = "none"; // 로그아웃 상태면 숨김
-                }
-            }
-        } catch (error) {
-            console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
-        }
-    }
+    //         if (email.trim()) {
+    //             // 로그인 상태 → 이메일 표시
+    //             userText.textContent = email;
+    //             if (divider) {
+    //                 divider.style.display = "block"; // 로그인 상태면 표시
+    //             }
+    //         } else {
+    //             // 로그아웃 상태 → 로그인 버튼 활성화
+    //             userText.textContent = "";
+    //             if (divider) {
+    //                 divider.style.display = "none"; // 로그아웃 상태면 숨김
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
+    //     }
+    // }
 
-    checkUserLogin(); // 페이지 로드 시 실행
+    // checkUserLogin(); // 페이지 로드 시 실행
 </script>
 
 </body>

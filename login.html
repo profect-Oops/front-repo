@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!--Google Fonts-->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
-
+    <link rel="icon" href="https://todaycoinfo.com/favicon.ico" type="image/x-icon">
     <style>
         /* 로그인 컨테이너 전체를 감싸는 영역 */
         .login-container {
@@ -167,18 +167,13 @@
     </div>
     <div class="icons">
         <!-- 알람 아이콘 (배지 포함) -->
-        <div style="position: relative; cursor: pointer;" onclick="location.href='alert/alarm.html'">
+        <div style="position: relative; cursor: pointer;" onclick="location.href='/alert/alarm.html'">
             <i class="fas fa-bell"></i>
             <!-- <span class="badge">2+</span> -->
         </div>
 
         <!-- 세로 구분선 -->
         <div class="divider"></div>
-
-        <!-- 유저 프로필 (텍스트 포함) -->
-        <span class="user-text" id="user-email"></span>
-        <!-- 로그인/로그아웃 아이콘 -->
-        <i id="auth-icon" class="fas" style="color: white; font-size: 30px; cursor: pointer;"></i>
 
     </div>
 </nav>
@@ -191,7 +186,7 @@
         <!-- 소셜 로그인 버튼 -->
         <div class="social-login-buttons">
             <!-- 구글 로그인 버튼 -->
-            <a id="google-login-btn" class="social-button google-button" href="https://accounts.google.com/o/oauth2/auth?client_id=982183786748-tcro3aco6sn5tjlmigla2fpk6k39kjfi.apps.googleusercontent.com&redirect_uri=http://localhost:8080/login/oauth2/code/google&response_type=code&scope=profile+email">
+            <a id="google-login-btn" class="social-button google-button" href="https://todaycoinfo.com/oauth2/authorization/google">
                 <i class="fab fa-google"></i> Google 로그인
             </a>
 
@@ -203,39 +198,39 @@
     </div>
 </div>
 <script>
-    const backendBaseUrl = "https://todaycoinfo.com";  // EC2 퍼블릭 IP 또는 도메인 입력
+    // const backendBaseUrl = "https://api.todaycoinfo.com";  // EC2 퍼블릭 IP 또는 도메인 입력
     
-    //로그인 확인
-    async function checkUserLogin() {
-        try {
-            //로컬
-            //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
-            const response = await fetch(`${backendBaseUrl}/api/user/email`);
+    // //로그인 확인
+    // async function checkUserLogin() {
+    //     try {
+    //         //로컬
+    //         //const response = await fetch('/api/user/email'); // 백엔드에서 이메일 가져오기
+    //         const response = await fetch(`${backendBaseUrl}/api/user/email`);
 
-            const email = await response.text(); // 응답을 텍스트로 변환
+    //         const email = await response.text(); // 응답을 텍스트로 변환
 
-            const userText = document.getElementById("user-email");
-            const divider = document.querySelector(".divider");
+    //         const userText = document.getElementById("user-email");
+    //         const divider = document.querySelector(".divider");
 
-            if (email.trim()) {
-                // 로그인 상태 → 이메일 표시
-                userText.textContent = email;
-                if (divider) {
-                    divider.style.display = "block"; // 로그인 상태면 표시
-                }
-            } else {
-                // 로그아웃 상태 → 로그인 버튼 활성화
-                userText.textContent = "";
-                if (divider) {
-                    divider.style.display = "none"; // 로그아웃 상태면 숨김
-                }
-            }
-        } catch (error) {
-            console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
-        }
-    }
+    //         if (email.trim()) {
+    //             // 로그인 상태 → 이메일 표시
+    //             userText.textContent = email;
+    //             if (divider) {
+    //                 divider.style.display = "block"; // 로그인 상태면 표시
+    //             }
+    //         } else {
+    //             // 로그아웃 상태 → 로그인 버튼 활성화
+    //             userText.textContent = "";
+    //             if (divider) {
+    //                 divider.style.display = "none"; // 로그아웃 상태면 숨김
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error("🚨 로그인 정보를 가져오는 중 오류 발생:", error);
+    //     }
+    // }
 
-    checkUserLogin(); // 페이지 로드 시 실행
+    // checkUserLogin(); // 페이지 로드 시 실행
 </script>
 </body>
 </html>

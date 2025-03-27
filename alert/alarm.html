@@ -503,10 +503,6 @@
 </div>
 
 <script>
-    if (window.location.protocol !== "https:") {
-        window.location.href = "https://" + window.location.hostname + window.location.pathname + window.location.search;
-    }
-
     const backendBaseUrl = "https://api.todaycoinfo.com";  // EC2 퍼블릭 IP 또는 도메인 입력
 
     // 페이지가 로드될 때 알림 데이터를 조회
@@ -654,7 +650,8 @@
                     const response = await fetch(`${backendBaseUrl}/api/alert/update/${alertId}`, {
                         method: "PATCH",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ alertActive: alertActive })
+                        body: JSON.stringify({ alertActive: alertActive }),
+                        credentials: "include"
                     });
 
                     const result = await response.json();

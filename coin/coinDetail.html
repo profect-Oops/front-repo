@@ -163,7 +163,7 @@
 
     <!-- 코인 정보 박스 -->
     <div class="bg-white p-4 rounded-lg shadow h-auto col-span-1">
-        <h2 class="text-xl font-bold">코인 관련 일정</h2>
+        <h2 class="text-xl font-bold">코인 관련 정보</h2>
         <div id="coin-gpt-data">
             <p><strong>크리스마스:</strong> 동심으로 돌아가 일확천금을 꿈꾸는 사람들로 인해 코인 값이 치솟는다.</p>
         </div>
@@ -217,10 +217,11 @@
                 .then(data => {
                     console.log("api 응답값: "+JSON.stringify(data, null, 2));
 
-                    // 코인 관련 일정(gptData) 삽입
+                    // 코인 관련 정보(gptData) 삽입
                     const coinGptData = document.getElementById("coin-gpt-data");
                     if (coinGptData && data.coin.gptData) {
-                        coinGptData.innerHTML = `<p>${data.coin.gptData}</p>`;
+                        const formatted = data.coin.gptData.replace(/\n/g, "<br>");
+                        coinGptData.innerHTML = `<p>${formatted}</p>`;
                     }
 
                     //감성분석
